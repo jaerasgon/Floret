@@ -20,7 +20,7 @@ It is a Mac app, with experimental Windows and Linux builds.
 - **Type and motion:** variable fonts, kinetic type, loops and easing.
 - **Things that react:** to sound, MIDI, your camera, your hands and face.
 
-You don't start from nothing: Floret comes with **177 sample patches**,
+You don't start from nothing: Floret comes with **179 sample patches**,
 including **48 short tutorials** that each teach one idea.
 
 ## A look inside

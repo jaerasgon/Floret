@@ -22,7 +22,7 @@ Mac.
   video, sound, MIDI, your camera and body tracking. The
   [full list](https://github.com/jaerasgon/Floret/blob/main/NODES.md) says
   what each one does.
-- **177 samples to learn from**, including 48 short tutorials that each
+- **179 samples to learn from**, including 48 short tutorials that each
   teach one idea, in the Library (File → Library).
 - **Find your look.** Roll a new variation with one key, save the ones you
   like as presets, and morph between them.

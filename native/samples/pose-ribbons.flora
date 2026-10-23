@@ -1,0 +1,1660 @@
+{
+  "kind": "floret.patch",
+  "version": 4,
+  "appVersion": "0.2.0",
+  "meta": {
+    "name": "Pose Ribbons",
+    "createdAt": "2026-10-23T00:00:00.000Z",
+    "modifiedAt": "2026-10-23T00:00:00.000Z"
+  },
+  "nodes": [
+    {
+      "id": "pr_doc",
+      "defType": "meta/comment",
+      "position": {
+        "x": 0,
+        "y": -364
+      },
+      "params": {
+        "text": "POSE RIBBONS\n\nSwitch the Camera on, step back so it can see you, and move. Your head, hands and feet each leave a long, glowing ribbon in a colour of their own. Wave, spin, dance: the ribbons are fat and bright where you are now and thin out behind you. Step out of the picture and they melt away. Your skeleton is only a faint whisper underneath.\n\nHow it works: the pose tracker finds your body. Ribbon memory remembers where five of its points have been for the last two seconds, and Ribbons draws a tapering line through each trail. The colours are added together like light, left to glow and fade.\n\nMake it yours: double-click Ribbons to change a ribbon's colour, or turn the glow up or down in the Effect.",
+        "width": 600,
+        "height": 300
+      },
+      "portValues": {
+        "text": "POSE RIBBONS\n\nSwitch the Camera on, step back so it can see you, and move. Your head, hands and feet each leave a long, glowing ribbon in a colour of their own. Wave, spin, dance: the ribbons are fat and bright where you are now and thin out behind you. Step out of the picture and they melt away. Your skeleton is only a faint whisper underneath.\n\nHow it works: the pose tracker finds your body. Ribbon memory remembers where five of its points have been for the last two seconds, and Ribbons draws a tapering line through each trail. The colours are added together like light, left to glow and fade.\n\nMake it yours: double-click Ribbons to change a ribbon's colour, or turn the glow up or down in the Effect.",
+        "width": 600,
+        "height": 300
+      }
+    },
+    {
+      "id": "pr_tog",
+      "defType": "io/toggle",
+      "position": {
+        "x": 0,
+        "y": 163
+      },
+      "params": {
+        "value": true,
+        "label": "Camera"
+      },
+      "portValues": {
+        "value": true,
+        "label": "Camera"
+      }
+    },
+    {
+      "id": "pr_cam",
+      "defType": "input/camera",
+      "position": {
+        "x": 275,
+        "y": 83
+      },
+      "params": {
+        "mirror": true
+      },
+      "portValues": {
+        "mirror": true
+      }
+    },
+    {
+      "id": "pr_lm",
+      "defType": "input/landmarks",
+      "position": {
+        "x": 801,
+        "y": 144
+      },
+      "params": {
+        "tracker": "pose",
+        "mirror": true,
+        "count": 1,
+        "person": 0,
+        "size": 640,
+        "guides": false
+      },
+      "portValues": {
+        "tracker": "pose",
+        "mirror": true,
+        "count": 1,
+        "person": 0,
+        "size": 640,
+        "guides": false
+      }
+    },
+    {
+      "id": "pr_ratio",
+      "defType": "math/math",
+      "position": {
+        "x": 505,
+        "y": 168
+      },
+      "params": {
+        "op": "divide",
+        "valueType": "number"
+      },
+      "portValues": {
+        "op": "divide",
+        "valueType": "number"
+      }
+    },
+    {
+      "id": "pr_squash",
+      "defType": "vec2/make",
+      "position": {
+        "x": 819,
+        "y": 0
+      },
+      "params": {
+        "x": 1
+      },
+      "portValues": {
+        "x": 1
+      }
+    },
+    {
+      "id": "pr_pts",
+      "defType": "math/math",
+      "position": {
+        "x": 1073,
+        "y": 356
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "vec2"
+      },
+      "portValues": {
+        "op": "multiply",
+        "valueType": "vec2"
+      }
+    },
+    {
+      "id": "pr_here",
+      "defType": "convert/to-number",
+      "position": {
+        "x": 1098,
+        "y": 521
+      },
+      "params": {}
+    },
+    {
+      "id": "pr_memory",
+      "defType": "meta/subpatch",
+      "position": {
+        "x": 1533,
+        "y": 472
+      },
+      "params": {
+        "width": 2122,
+        "height": 551,
+        "label": "Ribbon memory"
+      },
+      "ports": [
+        {
+          "id": "points",
+          "name": "points",
+          "type": "vec2",
+          "direction": "input",
+          "y": 100
+        },
+        {
+          "id": "here",
+          "name": "here",
+          "type": "number",
+          "direction": "input",
+          "y": 269
+        },
+        {
+          "id": "history",
+          "name": "history",
+          "type": "vec2",
+          "direction": "output",
+          "y": 406
+        }
+      ],
+      "width": 2122,
+      "height": 551
+    },
+    {
+      "id": "pr_which",
+      "defType": "data/csv-inline",
+      "position": {
+        "x": 156,
+        "y": 89
+      },
+      "params": {
+        "data": "0,15,16,27,28"
+      },
+      "portValues": {
+        "data": "0,15,16,27,28"
+      },
+      "parentId": "pr_memory"
+    },
+    {
+      "id": "pr_pick",
+      "defType": "spread/lookup",
+      "position": {
+        "x": 434,
+        "y": 40
+      },
+      "params": {
+        "op": "pick"
+      },
+      "portValues": {
+        "op": "pick"
+      },
+      "parentId": "pr_memory"
+    },
+    {
+      "id": "pr_some",
+      "defType": "math/math",
+      "position": {
+        "x": 131,
+        "y": 210
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number",
+        "b": 5
+      },
+      "portValues": {
+        "op": "multiply",
+        "valueType": "number",
+        "b": 5
+      },
+      "parentId": "pr_memory"
+    },
+    {
+      "id": "pr_found",
+      "defType": "spread/sublist",
+      "position": {
+        "x": 694,
+        "y": 130
+      },
+      "params": {
+        "op": "take"
+      },
+      "portValues": {
+        "op": "take"
+      },
+      "parentId": "pr_memory"
+    },
+    {
+      "id": "pr_read",
+      "defType": "state/read-spread",
+      "position": {
+        "x": 403,
+        "y": 325
+      },
+      "params": {
+        "slot": 1,
+        "name": "ribbon history"
+      },
+      "portValues": {
+        "slot": 1,
+        "name": "ribbon history"
+      },
+      "parentId": "pr_memory"
+    },
+    {
+      "id": "pr_prev",
+      "defType": "spread/sublist",
+      "position": {
+        "x": 694,
+        "y": 296
+      },
+      "params": {
+        "op": "take",
+        "count": 5
+      },
+      "portValues": {
+        "op": "take",
+        "count": 5
+      },
+      "parentId": "pr_memory"
+    },
+    {
+      "id": "pr_cand",
+      "defType": "spread/combine",
+      "position": {
+        "x": 926,
+        "y": 239
+      },
+      "params": {
+        "op": "concat"
+      },
+      "portValues": {
+        "op": "concat"
+      },
+      "parentId": "pr_memory"
+    },
+    {
+      "id": "pr_now",
+      "defType": "spread/sublist",
+      "position": {
+        "x": 1149,
+        "y": 271
+      },
+      "params": {
+        "op": "take",
+        "count": 5
+      },
+      "portValues": {
+        "op": "take",
+        "count": 5
+      },
+      "parentId": "pr_memory"
+    },
+    {
+      "id": "pr_hist",
+      "defType": "spread/combine",
+      "position": {
+        "x": 1371,
+        "y": 316
+      },
+      "params": {
+        "op": "concat"
+      },
+      "portValues": {
+        "op": "concat"
+      },
+      "parentId": "pr_memory"
+    },
+    {
+      "id": "pr_keep",
+      "defType": "spread/sublist",
+      "position": {
+        "x": 1595,
+        "y": 338
+      },
+      "params": {
+        "op": "take",
+        "count": 550
+      },
+      "portValues": {
+        "op": "take",
+        "count": 550
+      },
+      "parentId": "pr_memory"
+    },
+    {
+      "id": "pr_write",
+      "defType": "state/write-spread",
+      "position": {
+        "x": 1822,
+        "y": 433
+      },
+      "params": {
+        "slot": 1,
+        "name": "ribbon history"
+      },
+      "portValues": {
+        "slot": 1,
+        "name": "ribbon history"
+      },
+      "parentId": "pr_memory"
+    },
+    {
+      "id": "pr_ribbons",
+      "defType": "meta/subpatch",
+      "position": {
+        "x": 2013,
+        "y": 506
+      },
+      "params": {
+        "width": 2733,
+        "height": 1313,
+        "label": "Ribbons"
+      },
+      "ports": [
+        {
+          "id": "history",
+          "name": "history",
+          "type": "vec2",
+          "direction": "input",
+          "y": 517
+        },
+        {
+          "id": "here",
+          "name": "here",
+          "type": "number",
+          "direction": "input",
+          "y": 1147
+        },
+        {
+          "id": "ribbons",
+          "name": "ribbons",
+          "type": "layer",
+          "direction": "output",
+          "y": 911
+        }
+      ],
+      "width": 2733,
+      "height": 1313
+    },
+    {
+      "id": "pr_total",
+      "defType": "spread/count",
+      "position": {
+        "x": 138,
+        "y": 491
+      },
+      "params": {},
+      "parentId": "pr_ribbons"
+    },
+    {
+      "id": "pr_frames0",
+      "defType": "math/math",
+      "position": {
+        "x": 390,
+        "y": 504
+      },
+      "params": {
+        "op": "divide",
+        "valueType": "number",
+        "b": 5
+      },
+      "portValues": {
+        "op": "divide",
+        "valueType": "number",
+        "b": 5
+      },
+      "parentId": "pr_ribbons"
+    },
+    {
+      "id": "pr_age",
+      "defType": "spread/range",
+      "position": {
+        "x": 673,
+        "y": 584
+      },
+      "params": {},
+      "parentId": "pr_ribbons"
+    },
+    {
+      "id": "pr_slot",
+      "defType": "math/math",
+      "position": {
+        "x": 927,
+        "y": 459
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number",
+        "b": 5
+      },
+      "portValues": {
+        "op": "multiply",
+        "valueType": "number",
+        "b": 5
+      },
+      "parentId": "pr_ribbons"
+    },
+    {
+      "id": "pr_young",
+      "defType": "math/map",
+      "position": {
+        "x": 960,
+        "y": 747
+      },
+      "params": {
+        "valueType": "number",
+        "inMin": 0,
+        "inMax": 109,
+        "outMin": 1,
+        "outMax": 0
+      },
+      "portValues": {
+        "valueType": "number",
+        "inMin": 0,
+        "inMax": 109,
+        "outMin": 1,
+        "outMax": 0
+      },
+      "parentId": "pr_ribbons"
+    },
+    {
+      "id": "pr_curve",
+      "defType": "math/math",
+      "position": {
+        "x": 1273,
+        "y": 977
+      },
+      "params": {
+        "op": "pow",
+        "valueType": "number",
+        "b": 1.5
+      },
+      "portValues": {
+        "op": "pow",
+        "valueType": "number",
+        "b": 1.5
+      },
+      "parentId": "pr_ribbons"
+    },
+    {
+      "id": "pr_wide",
+      "defType": "math/map",
+      "position": {
+        "x": 1573,
+        "y": 870
+      },
+      "params": {
+        "valueType": "number",
+        "inMin": 0,
+        "inMax": 1,
+        "outMin": 0.5,
+        "outMax": 15
+      },
+      "portValues": {
+        "valueType": "number",
+        "inMin": 0,
+        "inMax": 1,
+        "outMin": 0.5,
+        "outMax": 15
+      },
+      "parentId": "pr_ribbons"
+    },
+    {
+      "id": "pr_stay",
+      "defType": "motion/smooth",
+      "position": {
+        "x": 156,
+        "y": 1110
+      },
+      "params": {
+        "valueType": "number",
+        "rate": 5
+      },
+      "portValues": {
+        "valueType": "number",
+        "rate": 5
+      },
+      "parentId": "pr_ribbons"
+    },
+    {
+      "id": "pr_thin",
+      "defType": "math/math",
+      "position": {
+        "x": 1823,
+        "y": 866
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number"
+      },
+      "portValues": {
+        "op": "multiply",
+        "valueType": "number"
+      },
+      "parentId": "pr_ribbons"
+    },
+    {
+      "id": "pr_group",
+      "defType": "transform/group",
+      "position": {
+        "x": 2453,
+        "y": 761
+      },
+      "params": {
+        "slotCount": 5
+      },
+      "portValues": {
+        "slotCount": 5
+      },
+      "parentId": "pr_ribbons"
+    },
+    {
+      "id": "pr_step0",
+      "defType": "math/math",
+      "position": {
+        "x": 1245,
+        "y": 149
+      },
+      "params": {
+        "op": "add",
+        "valueType": "number",
+        "b": 0
+      },
+      "portValues": {
+        "op": "add",
+        "valueType": "number",
+        "b": 0
+      },
+      "parentId": "pr_ribbons"
+    },
+    {
+      "id": "pr_trail0",
+      "defType": "spread/lookup",
+      "position": {
+        "x": 1562,
+        "y": 40
+      },
+      "params": {
+        "op": "pick"
+      },
+      "portValues": {
+        "op": "pick"
+      },
+      "parentId": "pr_ribbons"
+    },
+    {
+      "id": "pr_ribbon0",
+      "defType": "draw/path",
+      "position": {
+        "x": 2173,
+        "y": 273
+      },
+      "params": {
+        "color": {
+          "r": 1.0,
+          "g": 0.8862745098039215,
+          "b": 0.47843137254901963,
+          "a": 1.0
+        },
+        "tension": 0.5
+      },
+      "portValues": {
+        "color": {
+          "r": 1.0,
+          "g": 0.8862745098039215,
+          "b": 0.47843137254901963,
+          "a": 1.0
+        },
+        "tension": 0.5
+      },
+      "parentId": "pr_ribbons"
+    },
+    {
+      "id": "pr_step1",
+      "defType": "math/math",
+      "position": {
+        "x": 1245,
+        "y": 315
+      },
+      "params": {
+        "op": "add",
+        "valueType": "number",
+        "b": 1
+      },
+      "portValues": {
+        "op": "add",
+        "valueType": "number",
+        "b": 1
+      },
+      "parentId": "pr_ribbons"
+    },
+    {
+      "id": "pr_trail1",
+      "defType": "spread/lookup",
+      "position": {
+        "x": 1562,
+        "y": 206
+      },
+      "params": {
+        "op": "pick"
+      },
+      "portValues": {
+        "op": "pick"
+      },
+      "parentId": "pr_ribbons"
+    },
+    {
+      "id": "pr_ribbon1",
+      "defType": "draw/path",
+      "position": {
+        "x": 2173,
+        "y": 482
+      },
+      "params": {
+        "color": {
+          "r": 1.0,
+          "g": 0.30980392156862746,
+          "b": 0.6588235294117647,
+          "a": 1.0
+        },
+        "tension": 0.5
+      },
+      "portValues": {
+        "color": {
+          "r": 1.0,
+          "g": 0.30980392156862746,
+          "b": 0.6588235294117647,
+          "a": 1.0
+        },
+        "tension": 0.5
+      },
+      "parentId": "pr_ribbons"
+    },
+    {
+      "id": "pr_step2",
+      "defType": "math/math",
+      "position": {
+        "x": 1245,
+        "y": 480
+      },
+      "params": {
+        "op": "add",
+        "valueType": "number",
+        "b": 2
+      },
+      "portValues": {
+        "op": "add",
+        "valueType": "number",
+        "b": 2
+      },
+      "parentId": "pr_ribbons"
+    },
+    {
+      "id": "pr_trail2",
+      "defType": "spread/lookup",
+      "position": {
+        "x": 1562,
+        "y": 371
+      },
+      "params": {
+        "op": "pick"
+      },
+      "portValues": {
+        "op": "pick"
+      },
+      "parentId": "pr_ribbons"
+    },
+    {
+      "id": "pr_ribbon2",
+      "defType": "draw/path",
+      "position": {
+        "x": 2173,
+        "y": 692
+      },
+      "params": {
+        "color": {
+          "r": 0.20784313725490197,
+          "g": 0.8784313725490196,
+          "b": 1.0,
+          "a": 1.0
+        },
+        "tension": 0.5
+      },
+      "portValues": {
+        "color": {
+          "r": 0.20784313725490197,
+          "g": 0.8784313725490196,
+          "b": 1.0,
+          "a": 1.0
+        },
+        "tension": 0.5
+      },
+      "parentId": "pr_ribbons"
+    },
+    {
+      "id": "pr_step3",
+      "defType": "math/math",
+      "position": {
+        "x": 1245,
+        "y": 646
+      },
+      "params": {
+        "op": "add",
+        "valueType": "number",
+        "b": 3
+      },
+      "portValues": {
+        "op": "add",
+        "valueType": "number",
+        "b": 3
+      },
+      "parentId": "pr_ribbons"
+    },
+    {
+      "id": "pr_trail3",
+      "defType": "spread/lookup",
+      "position": {
+        "x": 1562,
+        "y": 704
+      },
+      "params": {
+        "op": "pick"
+      },
+      "portValues": {
+        "op": "pick"
+      },
+      "parentId": "pr_ribbons"
+    },
+    {
+      "id": "pr_ribbon3",
+      "defType": "draw/path",
+      "position": {
+        "x": 2173,
+        "y": 901
+      },
+      "params": {
+        "color": {
+          "r": 1.0,
+          "g": 0.5411764705882353,
+          "b": 0.23921568627450981,
+          "a": 1.0
+        },
+        "tension": 0.5
+      },
+      "portValues": {
+        "color": {
+          "r": 1.0,
+          "g": 0.5411764705882353,
+          "b": 0.23921568627450981,
+          "a": 1.0
+        },
+        "tension": 0.5
+      },
+      "parentId": "pr_ribbons"
+    },
+    {
+      "id": "pr_step4",
+      "defType": "math/math",
+      "position": {
+        "x": 1245,
+        "y": 811
+      },
+      "params": {
+        "op": "add",
+        "valueType": "number",
+        "b": 4
+      },
+      "portValues": {
+        "op": "add",
+        "valueType": "number",
+        "b": 4
+      },
+      "parentId": "pr_ribbons"
+    },
+    {
+      "id": "pr_trail4",
+      "defType": "spread/lookup",
+      "position": {
+        "x": 1562,
+        "y": 1079
+      },
+      "params": {
+        "op": "pick"
+      },
+      "portValues": {
+        "op": "pick"
+      },
+      "parentId": "pr_ribbons"
+    },
+    {
+      "id": "pr_ribbon4",
+      "defType": "draw/path",
+      "position": {
+        "x": 2173,
+        "y": 1111
+      },
+      "params": {
+        "color": {
+          "r": 0.6078431372549019,
+          "g": 0.4196078431372549,
+          "b": 1.0,
+          "a": 1.0
+        },
+        "tension": 0.5
+      },
+      "portValues": {
+        "color": {
+          "r": 0.6078431372549019,
+          "g": 0.4196078431372549,
+          "b": 1.0,
+          "a": 1.0
+        },
+        "tension": 0.5
+      },
+      "parentId": "pr_ribbons"
+    },
+    {
+      "id": "pr_light",
+      "defType": "transform/blend",
+      "position": {
+        "x": 2269,
+        "y": 465
+      },
+      "params": {
+        "mode": "add"
+      },
+      "portValues": {
+        "mode": "add"
+      }
+    },
+    {
+      "id": "pr_afterglow",
+      "defType": "gpu/echo",
+      "position": {
+        "x": 2515,
+        "y": 403
+      },
+      "params": {
+        "mode": "trails",
+        "decay": 0.86
+      },
+      "portValues": {
+        "mode": "trails",
+        "decay": 0.86
+      }
+    },
+    {
+      "id": "pr_glow",
+      "defType": "gpu/effect",
+      "position": {
+        "x": 2755,
+        "y": 429
+      },
+      "params": {
+        "mode": "bloom",
+        "threshold": 0.1,
+        "radius": 32,
+        "intensity": 2.0
+      },
+      "portValues": {
+        "mode": "bloom",
+        "threshold": 0.1,
+        "radius": 32,
+        "intensity": 2.0
+      }
+    },
+    {
+      "id": "pr_boneA",
+      "defType": "math/math",
+      "position": {
+        "x": 1073,
+        "y": 25
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "vec2"
+      },
+      "portValues": {
+        "op": "multiply",
+        "valueType": "vec2"
+      }
+    },
+    {
+      "id": "pr_boneB",
+      "defType": "math/math",
+      "position": {
+        "x": 1073,
+        "y": 190
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "vec2"
+      },
+      "portValues": {
+        "op": "multiply",
+        "valueType": "vec2"
+      }
+    },
+    {
+      "id": "pr_bones",
+      "defType": "region/foreach",
+      "position": {
+        "x": 1348,
+        "y": 112
+      },
+      "params": {
+        "width": 565,
+        "height": 312,
+        "label": "ForEach bone"
+      },
+      "ports": [
+        {
+          "id": "a",
+          "name": "a",
+          "type": "vec2",
+          "direction": "input",
+          "y": 76
+        },
+        {
+          "id": "b",
+          "name": "b",
+          "type": "vec2",
+          "direction": "input",
+          "y": 108
+        },
+        {
+          "id": "layer",
+          "name": "layer",
+          "type": "layer",
+          "direction": "output",
+          "y": 177
+        }
+      ],
+      "width": 565,
+      "height": 312
+    },
+    {
+      "id": "pr_whisper",
+      "defType": "style/stroke",
+      "position": {
+        "x": 128,
+        "y": 132
+      },
+      "params": {
+        "color": {
+          "r": 1.0,
+          "g": 1.0,
+          "b": 1.0,
+          "a": 0.13
+        },
+        "width": 2
+      },
+      "portValues": {
+        "color": {
+          "r": 1.0,
+          "g": 1.0,
+          "b": 1.0,
+          "a": 0.13
+        },
+        "width": 2
+      },
+      "parentId": "pr_bones"
+    },
+    {
+      "id": "pr_bone",
+      "defType": "draw/line",
+      "position": {
+        "x": 369,
+        "y": 71
+      },
+      "params": {},
+      "parentId": "pr_bones"
+    },
+    {
+      "id": "pr_stage",
+      "defType": "spread/merge",
+      "position": {
+        "x": 3000,
+        "y": 418
+      },
+      "params": {
+        "slotCount": 2
+      },
+      "portValues": {
+        "slotCount": 2
+      }
+    },
+    {
+      "id": "pr_screen",
+      "defType": "render/renderer",
+      "position": {
+        "x": 3264,
+        "y": 465
+      },
+      "params": {
+        "width": 640,
+        "height": 480,
+        "background": {
+          "r": 0.0196078431372549,
+          "g": 0.023529411764705882,
+          "b": 0.050980392156862744,
+          "a": 1.0
+        }
+      },
+      "portValues": {
+        "width": 640,
+        "height": 480,
+        "background": {
+          "r": 0.0196078431372549,
+          "g": 0.023529411764705882,
+          "b": 0.050980392156862744,
+          "a": 1.0
+        }
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_pr_1",
+      "source": "pr_tog",
+      "target": "pr_cam",
+      "sourceHandle": "out-bool",
+      "targetHandle": "in-start"
+    },
+    {
+      "id": "e_pr_2",
+      "source": "pr_tog",
+      "target": "pr_lm",
+      "sourceHandle": "out-bool",
+      "targetHandle": "in-start"
+    },
+    {
+      "id": "e_pr_3",
+      "source": "pr_cam",
+      "target": "pr_lm",
+      "sourceHandle": "out-image",
+      "targetHandle": "in-image"
+    },
+    {
+      "id": "e_pr_4",
+      "source": "pr_cam",
+      "target": "pr_ratio",
+      "sourceHandle": "out-height",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_pr_5",
+      "source": "pr_cam",
+      "target": "pr_ratio",
+      "sourceHandle": "out-width",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_pr_6",
+      "source": "pr_ratio",
+      "target": "pr_squash",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-y"
+    },
+    {
+      "id": "e_pr_7",
+      "source": "pr_lm",
+      "target": "pr_pts",
+      "sourceHandle": "out-points",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_pr_8",
+      "source": "pr_squash",
+      "target": "pr_pts",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_pr_9",
+      "source": "pr_lm",
+      "target": "pr_here",
+      "sourceHandle": "out-detected",
+      "targetHandle": "in-in"
+    },
+    {
+      "id": "e_pr_10",
+      "source": "pr_pts",
+      "target": "pr_memory",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-points"
+    },
+    {
+      "id": "e_pr_11",
+      "source": "pr_here",
+      "target": "pr_memory",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-here"
+    },
+    {
+      "id": "e_pr_12",
+      "source": "pr_memory",
+      "target": "pr_pick",
+      "sourceHandle": "out-points",
+      "targetHandle": "in-source"
+    },
+    {
+      "id": "e_pr_13",
+      "source": "pr_which",
+      "target": "pr_pick",
+      "sourceHandle": "out-values",
+      "targetHandle": "in-indices"
+    },
+    {
+      "id": "e_pr_14",
+      "source": "pr_memory",
+      "target": "pr_some",
+      "sourceHandle": "out-here",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_pr_15",
+      "source": "pr_pick",
+      "target": "pr_found",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-spread"
+    },
+    {
+      "id": "e_pr_16",
+      "source": "pr_some",
+      "target": "pr_found",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-count"
+    },
+    {
+      "id": "e_pr_17",
+      "source": "pr_found",
+      "target": "pr_cand",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_pr_18",
+      "source": "pr_read",
+      "target": "pr_prev",
+      "sourceHandle": "out-current",
+      "targetHandle": "in-spread"
+    },
+    {
+      "id": "e_pr_19",
+      "source": "pr_prev",
+      "target": "pr_cand",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_pr_20",
+      "source": "pr_cand",
+      "target": "pr_now",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-spread"
+    },
+    {
+      "id": "e_pr_21",
+      "source": "pr_now",
+      "target": "pr_hist",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_pr_22",
+      "source": "pr_read",
+      "target": "pr_hist",
+      "sourceHandle": "out-current",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_pr_23",
+      "source": "pr_hist",
+      "target": "pr_keep",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-spread"
+    },
+    {
+      "id": "e_pr_24",
+      "source": "pr_keep",
+      "target": "pr_write",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-next"
+    },
+    {
+      "id": "e_pr_25",
+      "source": "pr_keep",
+      "target": "pr_memory",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-history"
+    },
+    {
+      "id": "e_pr_26",
+      "source": "pr_memory",
+      "target": "pr_ribbons",
+      "sourceHandle": "out-history",
+      "targetHandle": "in-history"
+    },
+    {
+      "id": "e_pr_27",
+      "source": "pr_ribbons",
+      "target": "pr_total",
+      "sourceHandle": "out-history",
+      "targetHandle": "in-spread"
+    },
+    {
+      "id": "e_pr_28",
+      "source": "pr_total",
+      "target": "pr_frames0",
+      "sourceHandle": "out-count",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_pr_29",
+      "source": "pr_frames0",
+      "target": "pr_age",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-count"
+    },
+    {
+      "id": "e_pr_30",
+      "source": "pr_age",
+      "target": "pr_slot",
+      "sourceHandle": "out-indices",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_pr_31",
+      "source": "pr_age",
+      "target": "pr_young",
+      "sourceHandle": "out-indices",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_pr_32",
+      "source": "pr_young",
+      "target": "pr_curve",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_pr_33",
+      "source": "pr_curve",
+      "target": "pr_wide",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_pr_34",
+      "source": "pr_ribbons",
+      "target": "pr_stay",
+      "sourceHandle": "out-here",
+      "targetHandle": "in-value"
+    },
+    {
+      "id": "e_pr_35",
+      "source": "pr_wide",
+      "target": "pr_thin",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_pr_36",
+      "source": "pr_stay",
+      "target": "pr_thin",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_pr_37",
+      "source": "pr_slot",
+      "target": "pr_step0",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_pr_38",
+      "source": "pr_ribbons",
+      "target": "pr_trail0",
+      "sourceHandle": "out-history",
+      "targetHandle": "in-source"
+    },
+    {
+      "id": "e_pr_39",
+      "source": "pr_step0",
+      "target": "pr_trail0",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-indices"
+    },
+    {
+      "id": "e_pr_40",
+      "source": "pr_trail0",
+      "target": "pr_ribbon0",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-points"
+    },
+    {
+      "id": "e_pr_41",
+      "source": "pr_thin",
+      "target": "pr_ribbon0",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-widths"
+    },
+    {
+      "id": "e_pr_42",
+      "source": "pr_ribbon0",
+      "target": "pr_group",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s1"
+    },
+    {
+      "id": "e_pr_43",
+      "source": "pr_slot",
+      "target": "pr_step1",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_pr_44",
+      "source": "pr_ribbons",
+      "target": "pr_trail1",
+      "sourceHandle": "out-history",
+      "targetHandle": "in-source"
+    },
+    {
+      "id": "e_pr_45",
+      "source": "pr_step1",
+      "target": "pr_trail1",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-indices"
+    },
+    {
+      "id": "e_pr_46",
+      "source": "pr_trail1",
+      "target": "pr_ribbon1",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-points"
+    },
+    {
+      "id": "e_pr_47",
+      "source": "pr_thin",
+      "target": "pr_ribbon1",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-widths"
+    },
+    {
+      "id": "e_pr_48",
+      "source": "pr_ribbon1",
+      "target": "pr_group",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s2"
+    },
+    {
+      "id": "e_pr_49",
+      "source": "pr_slot",
+      "target": "pr_step2",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_pr_50",
+      "source": "pr_ribbons",
+      "target": "pr_trail2",
+      "sourceHandle": "out-history",
+      "targetHandle": "in-source"
+    },
+    {
+      "id": "e_pr_51",
+      "source": "pr_step2",
+      "target": "pr_trail2",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-indices"
+    },
+    {
+      "id": "e_pr_52",
+      "source": "pr_trail2",
+      "target": "pr_ribbon2",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-points"
+    },
+    {
+      "id": "e_pr_53",
+      "source": "pr_thin",
+      "target": "pr_ribbon2",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-widths"
+    },
+    {
+      "id": "e_pr_54",
+      "source": "pr_ribbon2",
+      "target": "pr_group",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s3"
+    },
+    {
+      "id": "e_pr_55",
+      "source": "pr_slot",
+      "target": "pr_step3",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_pr_56",
+      "source": "pr_ribbons",
+      "target": "pr_trail3",
+      "sourceHandle": "out-history",
+      "targetHandle": "in-source"
+    },
+    {
+      "id": "e_pr_57",
+      "source": "pr_step3",
+      "target": "pr_trail3",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-indices"
+    },
+    {
+      "id": "e_pr_58",
+      "source": "pr_trail3",
+      "target": "pr_ribbon3",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-points"
+    },
+    {
+      "id": "e_pr_59",
+      "source": "pr_thin",
+      "target": "pr_ribbon3",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-widths"
+    },
+    {
+      "id": "e_pr_60",
+      "source": "pr_ribbon3",
+      "target": "pr_group",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s4"
+    },
+    {
+      "id": "e_pr_61",
+      "source": "pr_slot",
+      "target": "pr_step4",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_pr_62",
+      "source": "pr_ribbons",
+      "target": "pr_trail4",
+      "sourceHandle": "out-history",
+      "targetHandle": "in-source"
+    },
+    {
+      "id": "e_pr_63",
+      "source": "pr_step4",
+      "target": "pr_trail4",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-indices"
+    },
+    {
+      "id": "e_pr_64",
+      "source": "pr_trail4",
+      "target": "pr_ribbon4",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-points"
+    },
+    {
+      "id": "e_pr_65",
+      "source": "pr_thin",
+      "target": "pr_ribbon4",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-widths"
+    },
+    {
+      "id": "e_pr_66",
+      "source": "pr_ribbon4",
+      "target": "pr_group",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s5"
+    },
+    {
+      "id": "e_pr_67",
+      "source": "pr_group",
+      "target": "pr_ribbons",
+      "sourceHandle": "out-grouped",
+      "targetHandle": "in-ribbons"
+    },
+    {
+      "id": "e_pr_68",
+      "source": "pr_here",
+      "target": "pr_ribbons",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-here"
+    },
+    {
+      "id": "e_pr_69",
+      "source": "pr_ribbons",
+      "target": "pr_light",
+      "sourceHandle": "out-ribbons",
+      "targetHandle": "in-layer"
+    },
+    {
+      "id": "e_pr_70",
+      "source": "pr_light",
+      "target": "pr_afterglow",
+      "sourceHandle": "out-blended",
+      "targetHandle": "in-input"
+    },
+    {
+      "id": "e_pr_71",
+      "source": "pr_afterglow",
+      "target": "pr_glow",
+      "sourceHandle": "out-out",
+      "targetHandle": "in-input"
+    },
+    {
+      "id": "e_pr_72",
+      "source": "pr_lm",
+      "target": "pr_boneA",
+      "sourceHandle": "out-connA",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_pr_73",
+      "source": "pr_squash",
+      "target": "pr_boneA",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_pr_74",
+      "source": "pr_lm",
+      "target": "pr_boneB",
+      "sourceHandle": "out-connB",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_pr_75",
+      "source": "pr_squash",
+      "target": "pr_boneB",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_pr_76",
+      "source": "pr_boneA",
+      "target": "pr_bones",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_pr_77",
+      "source": "pr_boneB",
+      "target": "pr_bones",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_pr_78",
+      "source": "pr_bones",
+      "target": "pr_bone",
+      "sourceHandle": "out-a",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_pr_79",
+      "source": "pr_bones",
+      "target": "pr_bone",
+      "sourceHandle": "out-b",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_pr_80",
+      "source": "pr_whisper",
+      "target": "pr_bone",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_pr_81",
+      "source": "pr_bone",
+      "target": "pr_bones",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-layer"
+    },
+    {
+      "id": "e_pr_82",
+      "source": "pr_bones",
+      "target": "pr_stage",
+      "sourceHandle": "out-layer",
+      "targetHandle": "in-s1"
+    },
+    {
+      "id": "e_pr_83",
+      "source": "pr_glow",
+      "target": "pr_stage",
+      "sourceHandle": "out-out",
+      "targetHandle": "in-s2"
+    },
+    {
+      "id": "e_pr_84",
+      "source": "pr_stage",
+      "target": "pr_screen",
+      "sourceHandle": "out-merged",
+      "targetHandle": "in-layers"
+    }
+  ]
+}

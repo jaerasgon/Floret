@@ -1,0 +1,2101 @@
+{
+  "kind": "floret.patch",
+  "version": 4,
+  "appVersion": "0.2.0",
+  "meta": {
+    "name": "Face Constellation",
+    "createdAt": "2026-10-23T00:00:00.000Z",
+    "modifiedAt": "2026-10-23T00:00:00.000Z"
+  },
+  "nodes": [
+    {
+      "id": "fc_doc",
+      "defType": "meta/comment",
+      "position": {
+        "x": 0,
+        "y": -404
+      },
+      "params": {
+        "text": "FACE CONSTELLATION\n\nSwitch the Camera on and look into it. Your face turns into a patch of night sky: a scatter of twinkling stars joined by fine threads, with your eyes, irises, lips and the outline of your face picked out in light.\n\nOpen your mouth wide and the threads reach further and the whole face glows brighter. Turn and tilt your head and the stars follow.\n\nHow it works: the face tracker gives 478 points. Stars picks every third one and makes it twinkle on its own beat, Connect Points joins near neighbours, Face lines traces the eyes, lips and outline, and Mouth sensor measures how wide your mouth is open compared with your face.\n\nMake it yours: double-click Stars to change the five star colours or how many there are, or change how far the threads reach when your mouth is shut.",
+        "width": 620,
+        "height": 340
+      },
+      "portValues": {
+        "text": "FACE CONSTELLATION\n\nSwitch the Camera on and look into it. Your face turns into a patch of night sky: a scatter of twinkling stars joined by fine threads, with your eyes, irises, lips and the outline of your face picked out in light.\n\nOpen your mouth wide and the threads reach further and the whole face glows brighter. Turn and tilt your head and the stars follow.\n\nHow it works: the face tracker gives 478 points. Stars picks every third one and makes it twinkle on its own beat, Connect Points joins near neighbours, Face lines traces the eyes, lips and outline, and Mouth sensor measures how wide your mouth is open compared with your face.\n\nMake it yours: double-click Stars to change the five star colours or how many there are, or change how far the threads reach when your mouth is shut.",
+        "width": 620,
+        "height": 340
+      }
+    },
+    {
+      "id": "fc_tog",
+      "defType": "io/toggle",
+      "position": {
+        "x": 0,
+        "y": 103
+      },
+      "params": {
+        "value": true,
+        "label": "Camera"
+      },
+      "portValues": {
+        "value": true,
+        "label": "Camera"
+      }
+    },
+    {
+      "id": "fc_cam",
+      "defType": "input/camera",
+      "position": {
+        "x": 275,
+        "y": 167
+      },
+      "params": {
+        "mirror": true
+      },
+      "portValues": {
+        "mirror": true
+      }
+    },
+    {
+      "id": "fc_lm",
+      "defType": "input/landmarks",
+      "position": {
+        "x": 799,
+        "y": 0
+      },
+      "params": {
+        "tracker": "face",
+        "mirror": true,
+        "count": 1,
+        "person": 0,
+        "size": 640,
+        "guides": false
+      },
+      "portValues": {
+        "tracker": "face",
+        "mirror": true,
+        "count": 1,
+        "person": 0,
+        "size": 640,
+        "guides": false
+      }
+    },
+    {
+      "id": "fc_ratio",
+      "defType": "math/math",
+      "position": {
+        "x": 515,
+        "y": 313
+      },
+      "params": {
+        "op": "divide",
+        "valueType": "number"
+      },
+      "portValues": {
+        "op": "divide",
+        "valueType": "number"
+      }
+    },
+    {
+      "id": "fc_squash",
+      "defType": "vec2/make",
+      "position": {
+        "x": 817,
+        "y": 496
+      },
+      "params": {
+        "x": 1
+      },
+      "portValues": {
+        "x": 1
+      }
+    },
+    {
+      "id": "fc_pts",
+      "defType": "math/math",
+      "position": {
+        "x": 1051,
+        "y": 411
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "vec2"
+      },
+      "portValues": {
+        "op": "multiply",
+        "valueType": "vec2"
+      }
+    },
+    {
+      "id": "fc_mouth",
+      "defType": "meta/subpatch",
+      "position": {
+        "x": 1330,
+        "y": 518
+      },
+      "params": {
+        "width": 1931,
+        "height": 614,
+        "label": "Mouth sensor"
+      },
+      "ports": [
+        {
+          "id": "points",
+          "name": "points",
+          "type": "vec2",
+          "direction": "input",
+          "y": 162
+        },
+        {
+          "id": "open",
+          "name": "open",
+          "type": "number",
+          "direction": "output",
+          "y": 560
+        }
+      ],
+      "width": 1931,
+      "height": 614
+    },
+    {
+      "id": "fc_mouthTop",
+      "defType": "data/csv-inline",
+      "position": {
+        "x": 133,
+        "y": 124
+      },
+      "params": {
+        "data": "13,10"
+      },
+      "portValues": {
+        "data": "13,10"
+      },
+      "parentId": "fc_mouth"
+    },
+    {
+      "id": "fc_mouthBottom",
+      "defType": "data/csv-inline",
+      "position": {
+        "x": 133,
+        "y": 246
+      },
+      "params": {
+        "data": "14,152"
+      },
+      "portValues": {
+        "data": "14,152"
+      },
+      "parentId": "fc_mouth"
+    },
+    {
+      "id": "fc_pa",
+      "defType": "spread/lookup",
+      "position": {
+        "x": 351,
+        "y": 40
+      },
+      "params": {
+        "op": "pick"
+      },
+      "portValues": {
+        "op": "pick"
+      },
+      "parentId": "fc_mouth"
+    },
+    {
+      "id": "fc_pb",
+      "defType": "spread/lookup",
+      "position": {
+        "x": 351,
+        "y": 206
+      },
+      "params": {
+        "op": "pick"
+      },
+      "portValues": {
+        "op": "pick"
+      },
+      "parentId": "fc_mouth"
+    },
+    {
+      "id": "fc_gaps",
+      "defType": "vec2/math",
+      "position": {
+        "x": 583,
+        "y": 157
+      },
+      "params": {
+        "op": "distance"
+      },
+      "portValues": {
+        "op": "distance"
+      },
+      "parentId": "fc_mouth"
+    },
+    {
+      "id": "fc_gap",
+      "defType": "spread/lookup",
+      "position": {
+        "x": 833,
+        "y": 119
+      },
+      "params": {
+        "op": "at",
+        "index": 0
+      },
+      "portValues": {
+        "op": "at",
+        "index": 0
+      },
+      "parentId": "fc_mouth"
+    },
+    {
+      "id": "fc_tall",
+      "defType": "spread/lookup",
+      "position": {
+        "x": 833,
+        "y": 284
+      },
+      "params": {
+        "op": "at",
+        "index": 1
+      },
+      "portValues": {
+        "op": "at",
+        "index": 1
+      },
+      "parentId": "fc_mouth"
+    },
+    {
+      "id": "fc_share",
+      "defType": "math/math",
+      "position": {
+        "x": 1064,
+        "y": 235
+      },
+      "params": {
+        "op": "divide",
+        "valueType": "number"
+      },
+      "portValues": {
+        "op": "divide",
+        "valueType": "number"
+      },
+      "parentId": "fc_mouth"
+    },
+    {
+      "id": "fc_scaled",
+      "defType": "math/map",
+      "position": {
+        "x": 1329,
+        "y": 301
+      },
+      "params": {
+        "valueType": "number",
+        "inMin": 0.02,
+        "inMax": 0.17,
+        "outMin": 0,
+        "outMax": 1
+      },
+      "portValues": {
+        "valueType": "number",
+        "inMin": 0.02,
+        "inMax": 0.17,
+        "outMin": 0,
+        "outMax": 1
+      },
+      "parentId": "fc_mouth"
+    },
+    {
+      "id": "fc_limited",
+      "defType": "math/clamp",
+      "position": {
+        "x": 1529,
+        "y": 411
+      },
+      "params": {
+        "valueType": "number",
+        "min": 0,
+        "max": 1
+      },
+      "portValues": {
+        "valueType": "number",
+        "min": 0,
+        "max": 1
+      },
+      "parentId": "fc_mouth"
+    },
+    {
+      "id": "fc_open",
+      "defType": "motion/smooth",
+      "position": {
+        "x": 1718,
+        "y": 477
+      },
+      "params": {
+        "valueType": "number",
+        "rate": 10
+      },
+      "portValues": {
+        "valueType": "number",
+        "rate": 10
+      },
+      "parentId": "fc_mouth"
+    },
+    {
+      "id": "fc_stars",
+      "defType": "meta/subpatch",
+      "position": {
+        "x": 1650,
+        "y": 391
+      },
+      "params": {
+        "width": 2333,
+        "height": 941,
+        "label": "Stars"
+      },
+      "ports": [
+        {
+          "id": "points",
+          "name": "points",
+          "type": "vec2",
+          "direction": "input",
+          "y": 151
+        },
+        {
+          "id": "stars",
+          "name": "stars",
+          "type": "vec2",
+          "direction": "output",
+          "y": 151
+        },
+        {
+          "id": "colours",
+          "name": "colours",
+          "type": "color",
+          "direction": "output",
+          "y": 734
+        },
+        {
+          "id": "layer",
+          "name": "layer",
+          "type": "layer",
+          "direction": "output",
+          "y": 520
+        }
+      ],
+      "width": 2333,
+      "height": 941
+    },
+    {
+      "id": "fc_which",
+      "defType": "spread/range",
+      "position": {
+        "x": 132,
+        "y": 334
+      },
+      "params": {
+        "count": 156
+      },
+      "portValues": {
+        "count": 156
+      },
+      "parentId": "fc_stars"
+    },
+    {
+      "id": "fc_third",
+      "defType": "math/math",
+      "position": {
+        "x": 433,
+        "y": 55
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number",
+        "b": 3
+      },
+      "portValues": {
+        "op": "multiply",
+        "valueType": "number",
+        "b": 3
+      },
+      "parentId": "fc_stars"
+    },
+    {
+      "id": "fc_star_at",
+      "defType": "spread/lookup",
+      "position": {
+        "x": 745,
+        "y": 40
+      },
+      "params": {
+        "op": "pick"
+      },
+      "portValues": {
+        "op": "pick"
+      },
+      "parentId": "fc_stars"
+    },
+    {
+      "id": "fc_clock",
+      "defType": "time/seconds",
+      "position": {
+        "x": 159,
+        "y": 455
+      },
+      "params": {},
+      "parentId": "fc_stars"
+    },
+    {
+      "id": "fc_offset",
+      "defType": "math/math",
+      "position": {
+        "x": 433,
+        "y": 221
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number",
+        "b": 1.9
+      },
+      "portValues": {
+        "op": "multiply",
+        "valueType": "number",
+        "b": 1.9
+      },
+      "parentId": "fc_stars"
+    },
+    {
+      "id": "fc_tempo",
+      "defType": "math/math",
+      "position": {
+        "x": 433,
+        "y": 386
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number",
+        "b": 2.2
+      },
+      "portValues": {
+        "op": "multiply",
+        "valueType": "number",
+        "b": 2.2
+      },
+      "parentId": "fc_stars"
+    },
+    {
+      "id": "fc_beat",
+      "defType": "math/math",
+      "position": {
+        "x": 723,
+        "y": 341
+      },
+      "params": {
+        "op": "add",
+        "valueType": "number"
+      },
+      "portValues": {
+        "op": "add",
+        "valueType": "number"
+      },
+      "parentId": "fc_stars"
+    },
+    {
+      "id": "fc_wave",
+      "defType": "math/math",
+      "position": {
+        "x": 1003,
+        "y": 396
+      },
+      "params": {
+        "op": "sin",
+        "valueType": "number"
+      },
+      "portValues": {
+        "op": "sin",
+        "valueType": "number"
+      },
+      "parentId": "fc_stars"
+    },
+    {
+      "id": "fc_size",
+      "defType": "math/map",
+      "position": {
+        "x": 1448,
+        "y": 334
+      },
+      "params": {
+        "valueType": "number",
+        "inMin": -1,
+        "inMax": 1,
+        "outMin": 1.8,
+        "outMax": 6.5
+      },
+      "portValues": {
+        "valueType": "number",
+        "inMin": -1,
+        "inMax": 1,
+        "outMin": 1.8,
+        "outMax": 6.5
+      },
+      "parentId": "fc_stars"
+    },
+    {
+      "id": "fc_shine",
+      "defType": "math/map",
+      "position": {
+        "x": 1229,
+        "y": 565
+      },
+      "params": {
+        "valueType": "number",
+        "inMin": -1,
+        "inMax": 1,
+        "outMin": 90,
+        "outMax": 255
+      },
+      "portValues": {
+        "valueType": "number",
+        "inMin": -1,
+        "inMax": 1,
+        "outMin": 90,
+        "outMax": 255
+      },
+      "parentId": "fc_stars"
+    },
+    {
+      "id": "fc_pal",
+      "defType": "color/palette",
+      "position": {
+        "x": 433,
+        "y": 552
+      },
+      "params": {
+        "mode": "stops",
+        "stopCount": 5,
+        "c0": "#8fd8ff",
+        "c1": "#b9a2ff",
+        "c2": "#ffa6dc",
+        "c3": "#ffe29a",
+        "c4": "#9bffe0"
+      },
+      "portValues": {
+        "mode": "stops",
+        "stopCount": 5,
+        "c0": "#8fd8ff",
+        "c1": "#b9a2ff",
+        "c2": "#ffa6dc",
+        "c3": "#ffe29a",
+        "c4": "#9bffe0"
+      },
+      "parentId": "fc_stars"
+    },
+    {
+      "id": "fc_which5",
+      "defType": "math/math",
+      "position": {
+        "x": 461,
+        "y": 783
+      },
+      "params": {
+        "op": "mod",
+        "valueType": "number",
+        "b": 5
+      },
+      "portValues": {
+        "op": "mod",
+        "valueType": "number",
+        "b": 5
+      },
+      "parentId": "fc_stars"
+    },
+    {
+      "id": "fc_starHue",
+      "defType": "spread/lookup",
+      "position": {
+        "x": 745,
+        "y": 636
+      },
+      "params": {
+        "op": "pick"
+      },
+      "portValues": {
+        "op": "pick"
+      },
+      "parentId": "fc_stars"
+    },
+    {
+      "id": "fc_starTint",
+      "defType": "color/set-alpha",
+      "position": {
+        "x": 1445,
+        "y": 544
+      },
+      "params": {},
+      "parentId": "fc_stars"
+    },
+    {
+      "id": "fc_starfield",
+      "defType": "region/foreach",
+      "position": {
+        "x": 1667,
+        "y": 312
+      },
+      "params": {
+        "width": 554,
+        "height": 299,
+        "label": "ForEach star"
+      },
+      "ports": [
+        {
+          "id": "p",
+          "name": "p",
+          "type": "vec2",
+          "direction": "input",
+          "y": 76
+        },
+        {
+          "id": "s",
+          "name": "s",
+          "type": "number",
+          "direction": "input",
+          "y": 123
+        },
+        {
+          "id": "col",
+          "name": "col",
+          "type": "color",
+          "direction": "input",
+          "y": 200
+        },
+        {
+          "id": "layer",
+          "name": "layer",
+          "type": "layer",
+          "direction": "output",
+          "y": 209
+        }
+      ],
+      "width": 554,
+      "height": 299,
+      "parentId": "fc_stars"
+    },
+    {
+      "id": "fc_starFill",
+      "defType": "style/fill",
+      "position": {
+        "x": 129,
+        "y": 163
+      },
+      "params": {
+        "mode": "color"
+      },
+      "portValues": {
+        "mode": "color"
+      },
+      "parentId": "fc_starfield"
+    },
+    {
+      "id": "fc_star",
+      "defType": "draw/ellipse",
+      "position": {
+        "x": 319,
+        "y": 59
+      },
+      "params": {},
+      "parentId": "fc_starfield"
+    },
+    {
+      "id": "fc_reach",
+      "defType": "math/lerp",
+      "position": {
+        "x": 1675,
+        "y": 225
+      },
+      "params": {
+        "valueType": "number",
+        "a": 34,
+        "b": 96
+      },
+      "portValues": {
+        "valueType": "number",
+        "a": 34,
+        "b": 96
+      }
+    },
+    {
+      "id": "fc_thread",
+      "defType": "style/stroke",
+      "position": {
+        "x": 1651,
+        "y": 545
+      },
+      "params": {
+        "color": {
+          "r": 1.0,
+          "g": 1.0,
+          "b": 1.0,
+          "a": 0.9
+        },
+        "width": 1.2
+      },
+      "portValues": {
+        "color": {
+          "r": 1.0,
+          "g": 1.0,
+          "b": 1.0,
+          "a": 0.9
+        },
+        "width": 1.2
+      }
+    },
+    {
+      "id": "fc_web",
+      "defType": "geometry/connect",
+      "position": {
+        "x": 1913,
+        "y": 283
+      },
+      "params": {
+        "mode": "distance",
+        "maxLinks": 4,
+        "fade": 0.9,
+        "taper": 0.3,
+        "colorBy": "points"
+      },
+      "portValues": {
+        "mode": "distance",
+        "maxLinks": 4,
+        "fade": 0.9,
+        "taper": 0.3,
+        "colorBy": "points"
+      }
+    },
+    {
+      "id": "fc_lines",
+      "defType": "meta/subpatch",
+      "position": {
+        "x": 1905,
+        "y": 630
+      },
+      "params": {
+        "width": 1290,
+        "height": 1776,
+        "label": "Face lines"
+      },
+      "ports": [
+        {
+          "id": "points",
+          "name": "points",
+          "type": "vec2",
+          "direction": "input",
+          "y": 785
+        },
+        {
+          "id": "layer",
+          "name": "layer",
+          "type": "layer",
+          "direction": "output",
+          "y": 1055
+        }
+      ],
+      "width": 1290,
+      "height": 1776
+    },
+    {
+      "id": "fc_nofill",
+      "defType": "style/no-fill",
+      "position": {
+        "x": 181,
+        "y": 941
+      },
+      "params": {},
+      "parentId": "fc_lines"
+    },
+    {
+      "id": "fc_penEye",
+      "defType": "style/stroke",
+      "position": {
+        "x": 465,
+        "y": 371
+      },
+      "params": {
+        "color": {
+          "r": 0.6509803921568628,
+          "g": 0.9490196078431372,
+          "b": 1.0,
+          "a": 1.0
+        },
+        "width": 1.9
+      },
+      "portValues": {
+        "color": {
+          "r": 0.6509803921568628,
+          "g": 0.9490196078431372,
+          "b": 1.0,
+          "a": 1.0
+        },
+        "width": 1.9
+      },
+      "parentId": "fc_lines"
+    },
+    {
+      "id": "fc_penIris",
+      "defType": "style/stroke",
+      "position": {
+        "x": 465,
+        "y": 890
+      },
+      "params": {
+        "color": {
+          "r": 1.0,
+          "g": 0.8901960784313725,
+          "b": 0.6039215686274509,
+          "a": 1.0
+        },
+        "width": 1.4
+      },
+      "portValues": {
+        "color": {
+          "r": 1.0,
+          "g": 0.8901960784313725,
+          "b": 0.6039215686274509,
+          "a": 1.0
+        },
+        "width": 1.4
+      },
+      "parentId": "fc_lines"
+    },
+    {
+      "id": "fc_penLips",
+      "defType": "style/stroke",
+      "position": {
+        "x": 465,
+        "y": 1077
+      },
+      "params": {
+        "color": {
+          "r": 1.0,
+          "g": 0.5254901960784314,
+          "b": 0.796078431372549,
+          "a": 1.0
+        },
+        "width": 2.4
+      },
+      "portValues": {
+        "color": {
+          "r": 1.0,
+          "g": 0.5254901960784314,
+          "b": 0.796078431372549,
+          "a": 1.0
+        },
+        "width": 2.4
+      },
+      "parentId": "fc_lines"
+    },
+    {
+      "id": "fc_penOval",
+      "defType": "style/stroke",
+      "position": {
+        "x": 459,
+        "y": 1265
+      },
+      "params": {
+        "color": {
+          "r": 0.615686274509804,
+          "g": 0.5490196078431373,
+          "b": 1.0,
+          "a": 0.55
+        },
+        "width": 1.6
+      },
+      "portValues": {
+        "color": {
+          "r": 0.615686274509804,
+          "g": 0.5490196078431373,
+          "b": 1.0,
+          "a": 0.55
+        },
+        "width": 1.6
+      },
+      "parentId": "fc_lines"
+    },
+    {
+      "id": "fc_outline",
+      "defType": "transform/group",
+      "position": {
+        "x": 1010,
+        "y": 883
+      },
+      "params": {
+        "slotCount": 6
+      },
+      "portValues": {
+        "slotCount": 6
+      },
+      "parentId": "fc_lines"
+    },
+    {
+      "id": "fc_eyeRAt",
+      "defType": "data/csv-inline",
+      "position": {
+        "x": 167,
+        "y": 373
+      },
+      "params": {
+        "data": "33,7,163,144,145,153,154,155,133,173,157,158,159,160,161,246"
+      },
+      "portValues": {
+        "data": "33,7,163,144,145,153,154,155,133,173,157,158,159,160,161,246"
+      },
+      "parentId": "fc_lines"
+    },
+    {
+      "id": "fc_eyeRPts",
+      "defType": "spread/lookup",
+      "position": {
+        "x": 461,
+        "y": 40
+      },
+      "params": {
+        "op": "pick"
+      },
+      "portValues": {
+        "op": "pick"
+      },
+      "parentId": "fc_lines"
+    },
+    {
+      "id": "fc_eyeR",
+      "defType": "draw/polygon",
+      "position": {
+        "x": 741,
+        "y": 370
+      },
+      "params": {
+        "closed": true
+      },
+      "portValues": {
+        "closed": true
+      },
+      "parentId": "fc_lines"
+    },
+    {
+      "id": "fc_eyeLAt",
+      "defType": "data/csv-inline",
+      "position": {
+        "x": 167,
+        "y": 495
+      },
+      "params": {
+        "data": "263,249,390,373,374,380,381,382,362,398,384,385,386,387,388,466"
+      },
+      "portValues": {
+        "data": "263,249,390,373,374,380,381,382,362,398,384,385,386,387,388,466"
+      },
+      "parentId": "fc_lines"
+    },
+    {
+      "id": "fc_eyeLPts",
+      "defType": "spread/lookup",
+      "position": {
+        "x": 461,
+        "y": 205
+      },
+      "params": {
+        "op": "pick"
+      },
+      "portValues": {
+        "op": "pick"
+      },
+      "parentId": "fc_lines"
+    },
+    {
+      "id": "fc_eyeL",
+      "defType": "draw/polygon",
+      "position": {
+        "x": 741,
+        "y": 557
+      },
+      "params": {
+        "closed": true
+      },
+      "portValues": {
+        "closed": true
+      },
+      "parentId": "fc_lines"
+    },
+    {
+      "id": "fc_irisRAt",
+      "defType": "data/csv-inline",
+      "position": {
+        "x": 167,
+        "y": 684
+      },
+      "params": {
+        "data": "469,470,471,472"
+      },
+      "portValues": {
+        "data": "469,470,471,472"
+      },
+      "parentId": "fc_lines"
+    },
+    {
+      "id": "fc_irisRPts",
+      "defType": "spread/lookup",
+      "position": {
+        "x": 461,
+        "y": 559
+      },
+      "params": {
+        "op": "pick"
+      },
+      "portValues": {
+        "op": "pick"
+      },
+      "parentId": "fc_lines"
+    },
+    {
+      "id": "fc_irisR",
+      "defType": "draw/polygon",
+      "position": {
+        "x": 741,
+        "y": 745
+      },
+      "params": {
+        "closed": true
+      },
+      "portValues": {
+        "closed": true
+      },
+      "parentId": "fc_lines"
+    },
+    {
+      "id": "fc_irisLAt",
+      "defType": "data/csv-inline",
+      "position": {
+        "x": 167,
+        "y": 806
+      },
+      "params": {
+        "data": "474,475,476,477"
+      },
+      "portValues": {
+        "data": "474,475,476,477"
+      },
+      "parentId": "fc_lines"
+    },
+    {
+      "id": "fc_irisLPts",
+      "defType": "spread/lookup",
+      "position": {
+        "x": 461,
+        "y": 724
+      },
+      "params": {
+        "op": "pick"
+      },
+      "portValues": {
+        "op": "pick"
+      },
+      "parentId": "fc_lines"
+    },
+    {
+      "id": "fc_irisL",
+      "defType": "draw/polygon",
+      "position": {
+        "x": 741,
+        "y": 932
+      },
+      "params": {
+        "closed": true
+      },
+      "portValues": {
+        "closed": true
+      },
+      "parentId": "fc_lines"
+    },
+    {
+      "id": "fc_lipsAt",
+      "defType": "data/csv-inline",
+      "position": {
+        "x": 167,
+        "y": 1201
+      },
+      "params": {
+        "data": "61,146,91,181,84,17,314,405,321,375,291,409,270,269,267,0,37,39,40,185"
+      },
+      "portValues": {
+        "data": "61,146,91,181,84,17,314,405,321,375,291,409,270,269,267,0,37,39,40,185"
+      },
+      "parentId": "fc_lines"
+    },
+    {
+      "id": "fc_lipsPts",
+      "defType": "spread/lookup",
+      "position": {
+        "x": 461,
+        "y": 1452
+      },
+      "params": {
+        "op": "pick"
+      },
+      "portValues": {
+        "op": "pick"
+      },
+      "parentId": "fc_lines"
+    },
+    {
+      "id": "fc_lips",
+      "defType": "draw/polygon",
+      "position": {
+        "x": 741,
+        "y": 1144
+      },
+      "params": {
+        "closed": true
+      },
+      "portValues": {
+        "closed": true
+      },
+      "parentId": "fc_lines"
+    },
+    {
+      "id": "fc_ovalAt",
+      "defType": "data/csv-inline",
+      "position": {
+        "x": 167,
+        "y": 1636
+      },
+      "params": {
+        "data": "10,338,297,332,284,251,389,356,454,323,361,288,397,365,379,378,400,377,152,148,176,149,150,136,172,58,132,93,234,127,162,21,54,103,67,109"
+      },
+      "portValues": {
+        "data": "10,338,297,332,284,251,389,356,454,323,361,288,397,365,379,378,400,377,152,148,176,149,150,136,172,58,132,93,234,127,162,21,54,103,67,109"
+      },
+      "parentId": "fc_lines"
+    },
+    {
+      "id": "fc_ovalPts",
+      "defType": "spread/lookup",
+      "position": {
+        "x": 461,
+        "y": 1618
+      },
+      "params": {
+        "op": "pick"
+      },
+      "portValues": {
+        "op": "pick"
+      },
+      "parentId": "fc_lines"
+    },
+    {
+      "id": "fc_oval",
+      "defType": "draw/polygon",
+      "position": {
+        "x": 741,
+        "y": 1331
+      },
+      "params": {
+        "closed": true
+      },
+      "portValues": {
+        "closed": true
+      },
+      "parentId": "fc_lines"
+    },
+    {
+      "id": "fc_sky",
+      "defType": "transform/group",
+      "position": {
+        "x": 2177,
+        "y": 510
+      },
+      "params": {
+        "slotCount": 3
+      },
+      "portValues": {
+        "slotCount": 3
+      }
+    },
+    {
+      "id": "fc_present",
+      "defType": "region/if",
+      "position": {
+        "x": 2463,
+        "y": 392
+      },
+      "params": {
+        "width": 408,
+        "height": 156,
+        "label": "If a face is there"
+      },
+      "ports": [
+        {
+          "id": "sky",
+          "name": "sky",
+          "type": "layer",
+          "direction": "input",
+          "y": 77
+        },
+        {
+          "id": "layer",
+          "name": "layer",
+          "type": "layer",
+          "direction": "output",
+          "y": 102
+        }
+      ],
+      "width": 408,
+      "height": 156
+    },
+    {
+      "id": "fc_pass",
+      "defType": "transform/group",
+      "position": {
+        "x": 128,
+        "y": 40
+      },
+      "params": {
+        "slotCount": 1
+      },
+      "portValues": {
+        "slotCount": 1
+      },
+      "parentId": "fc_present"
+    },
+    {
+      "id": "fc_light",
+      "defType": "transform/blend",
+      "position": {
+        "x": 2967,
+        "y": 433
+      },
+      "params": {
+        "mode": "add"
+      },
+      "portValues": {
+        "mode": "add"
+      }
+    },
+    {
+      "id": "fc_shimmer",
+      "defType": "gpu/echo",
+      "position": {
+        "x": 3204,
+        "y": 435
+      },
+      "params": {
+        "mode": "trails",
+        "decay": 0.6
+      },
+      "portValues": {
+        "mode": "trails",
+        "decay": 0.6
+      }
+    },
+    {
+      "id": "fc_gleam",
+      "defType": "math/lerp",
+      "position": {
+        "x": 3230,
+        "y": 644
+      },
+      "params": {
+        "valueType": "number",
+        "a": 1.3,
+        "b": 2.1
+      },
+      "portValues": {
+        "valueType": "number",
+        "a": 1.3,
+        "b": 2.1
+      }
+    },
+    {
+      "id": "fc_glow",
+      "defType": "gpu/effect",
+      "position": {
+        "x": 3441,
+        "y": 574
+      },
+      "params": {
+        "mode": "bloom",
+        "threshold": 0.1,
+        "radius": 26
+      },
+      "portValues": {
+        "mode": "bloom",
+        "threshold": 0.1,
+        "radius": 26
+      }
+    },
+    {
+      "id": "fc_screen",
+      "defType": "render/renderer",
+      "position": {
+        "x": 3671,
+        "y": 687
+      },
+      "params": {
+        "width": 640,
+        "height": 480,
+        "background": {
+          "r": 0.01568627450980392,
+          "g": 0.0196078431372549,
+          "b": 0.058823529411764705,
+          "a": 1.0
+        }
+      },
+      "portValues": {
+        "width": 640,
+        "height": 480,
+        "background": {
+          "r": 0.01568627450980392,
+          "g": 0.0196078431372549,
+          "b": 0.058823529411764705,
+          "a": 1.0
+        }
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_fc_1",
+      "source": "fc_tog",
+      "target": "fc_cam",
+      "sourceHandle": "out-bool",
+      "targetHandle": "in-start"
+    },
+    {
+      "id": "e_fc_2",
+      "source": "fc_tog",
+      "target": "fc_lm",
+      "sourceHandle": "out-bool",
+      "targetHandle": "in-start"
+    },
+    {
+      "id": "e_fc_3",
+      "source": "fc_cam",
+      "target": "fc_lm",
+      "sourceHandle": "out-image",
+      "targetHandle": "in-image"
+    },
+    {
+      "id": "e_fc_4",
+      "source": "fc_cam",
+      "target": "fc_ratio",
+      "sourceHandle": "out-height",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_fc_5",
+      "source": "fc_cam",
+      "target": "fc_ratio",
+      "sourceHandle": "out-width",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_fc_6",
+      "source": "fc_ratio",
+      "target": "fc_squash",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-y"
+    },
+    {
+      "id": "e_fc_7",
+      "source": "fc_lm",
+      "target": "fc_pts",
+      "sourceHandle": "out-points",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_fc_8",
+      "source": "fc_squash",
+      "target": "fc_pts",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_fc_9",
+      "source": "fc_pts",
+      "target": "fc_mouth",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-points"
+    },
+    {
+      "id": "e_fc_10",
+      "source": "fc_mouth",
+      "target": "fc_pa",
+      "sourceHandle": "out-points",
+      "targetHandle": "in-source"
+    },
+    {
+      "id": "e_fc_11",
+      "source": "fc_mouthTop",
+      "target": "fc_pa",
+      "sourceHandle": "out-values",
+      "targetHandle": "in-indices"
+    },
+    {
+      "id": "e_fc_12",
+      "source": "fc_mouth",
+      "target": "fc_pb",
+      "sourceHandle": "out-points",
+      "targetHandle": "in-source"
+    },
+    {
+      "id": "e_fc_13",
+      "source": "fc_mouthBottom",
+      "target": "fc_pb",
+      "sourceHandle": "out-values",
+      "targetHandle": "in-indices"
+    },
+    {
+      "id": "e_fc_14",
+      "source": "fc_pa",
+      "target": "fc_gaps",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_fc_15",
+      "source": "fc_pb",
+      "target": "fc_gaps",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_fc_16",
+      "source": "fc_gaps",
+      "target": "fc_gap",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-spread"
+    },
+    {
+      "id": "e_fc_17",
+      "source": "fc_gaps",
+      "target": "fc_tall",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-spread"
+    },
+    {
+      "id": "e_fc_18",
+      "source": "fc_gap",
+      "target": "fc_share",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_fc_19",
+      "source": "fc_tall",
+      "target": "fc_share",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_fc_20",
+      "source": "fc_share",
+      "target": "fc_scaled",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_fc_21",
+      "source": "fc_scaled",
+      "target": "fc_limited",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_fc_22",
+      "source": "fc_limited",
+      "target": "fc_open",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-value"
+    },
+    {
+      "id": "e_fc_23",
+      "source": "fc_open",
+      "target": "fc_mouth",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-open"
+    },
+    {
+      "id": "e_fc_24",
+      "source": "fc_pts",
+      "target": "fc_stars",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-points"
+    },
+    {
+      "id": "e_fc_25",
+      "source": "fc_stars",
+      "target": "fc_star_at",
+      "sourceHandle": "out-points",
+      "targetHandle": "in-source"
+    },
+    {
+      "id": "e_fc_26",
+      "source": "fc_which",
+      "target": "fc_third",
+      "sourceHandle": "out-indices",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_fc_27",
+      "source": "fc_third",
+      "target": "fc_star_at",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-indices"
+    },
+    {
+      "id": "e_fc_28",
+      "source": "fc_star_at",
+      "target": "fc_stars",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-stars"
+    },
+    {
+      "id": "e_fc_29",
+      "source": "fc_which",
+      "target": "fc_offset",
+      "sourceHandle": "out-indices",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_fc_30",
+      "source": "fc_clock",
+      "target": "fc_tempo",
+      "sourceHandle": "out-t",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_fc_31",
+      "source": "fc_offset",
+      "target": "fc_beat",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_fc_32",
+      "source": "fc_tempo",
+      "target": "fc_beat",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_fc_33",
+      "source": "fc_beat",
+      "target": "fc_wave",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_fc_34",
+      "source": "fc_wave",
+      "target": "fc_size",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_fc_35",
+      "source": "fc_wave",
+      "target": "fc_shine",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_fc_36",
+      "source": "fc_which",
+      "target": "fc_which5",
+      "sourceHandle": "out-indices",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_fc_37",
+      "source": "fc_pal",
+      "target": "fc_starHue",
+      "sourceHandle": "out-colors",
+      "targetHandle": "in-source"
+    },
+    {
+      "id": "e_fc_38",
+      "source": "fc_which5",
+      "target": "fc_starHue",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-indices"
+    },
+    {
+      "id": "e_fc_39",
+      "source": "fc_starHue",
+      "target": "fc_starTint",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-color"
+    },
+    {
+      "id": "e_fc_40",
+      "source": "fc_shine",
+      "target": "fc_starTint",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_fc_41",
+      "source": "fc_starHue",
+      "target": "fc_stars",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-colours"
+    },
+    {
+      "id": "e_fc_42",
+      "source": "fc_star_at",
+      "target": "fc_starfield",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-p"
+    },
+    {
+      "id": "e_fc_43",
+      "source": "fc_size",
+      "target": "fc_starfield",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-s"
+    },
+    {
+      "id": "e_fc_44",
+      "source": "fc_starTint",
+      "target": "fc_starfield",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-col"
+    },
+    {
+      "id": "e_fc_45",
+      "source": "fc_starfield",
+      "target": "fc_starFill",
+      "sourceHandle": "out-col",
+      "targetHandle": "in-color"
+    },
+    {
+      "id": "e_fc_46",
+      "source": "fc_starfield",
+      "target": "fc_star",
+      "sourceHandle": "out-p",
+      "targetHandle": "in-pos"
+    },
+    {
+      "id": "e_fc_47",
+      "source": "fc_starfield",
+      "target": "fc_star",
+      "sourceHandle": "out-s",
+      "targetHandle": "in-w"
+    },
+    {
+      "id": "e_fc_48",
+      "source": "fc_starfield",
+      "target": "fc_star",
+      "sourceHandle": "out-s",
+      "targetHandle": "in-h"
+    },
+    {
+      "id": "e_fc_49",
+      "source": "fc_starFill",
+      "target": "fc_star",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_fc_50",
+      "source": "fc_star",
+      "target": "fc_starfield",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-layer"
+    },
+    {
+      "id": "e_fc_51",
+      "source": "fc_starfield",
+      "target": "fc_stars",
+      "sourceHandle": "out-layer",
+      "targetHandle": "in-layer"
+    },
+    {
+      "id": "e_fc_52",
+      "source": "fc_mouth",
+      "target": "fc_reach",
+      "sourceHandle": "out-open",
+      "targetHandle": "in-t"
+    },
+    {
+      "id": "e_fc_53",
+      "source": "fc_stars",
+      "target": "fc_web",
+      "sourceHandle": "out-stars",
+      "targetHandle": "in-points"
+    },
+    {
+      "id": "e_fc_54",
+      "source": "fc_reach",
+      "target": "fc_web",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-distance"
+    },
+    {
+      "id": "e_fc_55",
+      "source": "fc_stars",
+      "target": "fc_web",
+      "sourceHandle": "out-colours",
+      "targetHandle": "in-colors"
+    },
+    {
+      "id": "e_fc_56",
+      "source": "fc_thread",
+      "target": "fc_web",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_fc_57",
+      "source": "fc_nofill",
+      "target": "fc_penEye",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-base"
+    },
+    {
+      "id": "e_fc_58",
+      "source": "fc_nofill",
+      "target": "fc_penIris",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-base"
+    },
+    {
+      "id": "e_fc_59",
+      "source": "fc_nofill",
+      "target": "fc_penLips",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-base"
+    },
+    {
+      "id": "e_fc_60",
+      "source": "fc_nofill",
+      "target": "fc_penOval",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-base"
+    },
+    {
+      "id": "e_fc_61",
+      "source": "fc_pts",
+      "target": "fc_lines",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-points"
+    },
+    {
+      "id": "e_fc_62",
+      "source": "fc_lines",
+      "target": "fc_eyeRPts",
+      "sourceHandle": "out-points",
+      "targetHandle": "in-source"
+    },
+    {
+      "id": "e_fc_63",
+      "source": "fc_eyeRAt",
+      "target": "fc_eyeRPts",
+      "sourceHandle": "out-values",
+      "targetHandle": "in-indices"
+    },
+    {
+      "id": "e_fc_64",
+      "source": "fc_eyeRPts",
+      "target": "fc_eyeR",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-points"
+    },
+    {
+      "id": "e_fc_65",
+      "source": "fc_penEye",
+      "target": "fc_eyeR",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_fc_66",
+      "source": "fc_eyeR",
+      "target": "fc_outline",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s1"
+    },
+    {
+      "id": "e_fc_67",
+      "source": "fc_lines",
+      "target": "fc_eyeLPts",
+      "sourceHandle": "out-points",
+      "targetHandle": "in-source"
+    },
+    {
+      "id": "e_fc_68",
+      "source": "fc_eyeLAt",
+      "target": "fc_eyeLPts",
+      "sourceHandle": "out-values",
+      "targetHandle": "in-indices"
+    },
+    {
+      "id": "e_fc_69",
+      "source": "fc_eyeLPts",
+      "target": "fc_eyeL",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-points"
+    },
+    {
+      "id": "e_fc_70",
+      "source": "fc_penEye",
+      "target": "fc_eyeL",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_fc_71",
+      "source": "fc_eyeL",
+      "target": "fc_outline",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s2"
+    },
+    {
+      "id": "e_fc_72",
+      "source": "fc_lines",
+      "target": "fc_irisRPts",
+      "sourceHandle": "out-points",
+      "targetHandle": "in-source"
+    },
+    {
+      "id": "e_fc_73",
+      "source": "fc_irisRAt",
+      "target": "fc_irisRPts",
+      "sourceHandle": "out-values",
+      "targetHandle": "in-indices"
+    },
+    {
+      "id": "e_fc_74",
+      "source": "fc_irisRPts",
+      "target": "fc_irisR",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-points"
+    },
+    {
+      "id": "e_fc_75",
+      "source": "fc_penIris",
+      "target": "fc_irisR",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_fc_76",
+      "source": "fc_irisR",
+      "target": "fc_outline",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s3"
+    },
+    {
+      "id": "e_fc_77",
+      "source": "fc_lines",
+      "target": "fc_irisLPts",
+      "sourceHandle": "out-points",
+      "targetHandle": "in-source"
+    },
+    {
+      "id": "e_fc_78",
+      "source": "fc_irisLAt",
+      "target": "fc_irisLPts",
+      "sourceHandle": "out-values",
+      "targetHandle": "in-indices"
+    },
+    {
+      "id": "e_fc_79",
+      "source": "fc_irisLPts",
+      "target": "fc_irisL",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-points"
+    },
+    {
+      "id": "e_fc_80",
+      "source": "fc_penIris",
+      "target": "fc_irisL",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_fc_81",
+      "source": "fc_irisL",
+      "target": "fc_outline",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s4"
+    },
+    {
+      "id": "e_fc_82",
+      "source": "fc_lines",
+      "target": "fc_lipsPts",
+      "sourceHandle": "out-points",
+      "targetHandle": "in-source"
+    },
+    {
+      "id": "e_fc_83",
+      "source": "fc_lipsAt",
+      "target": "fc_lipsPts",
+      "sourceHandle": "out-values",
+      "targetHandle": "in-indices"
+    },
+    {
+      "id": "e_fc_84",
+      "source": "fc_lipsPts",
+      "target": "fc_lips",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-points"
+    },
+    {
+      "id": "e_fc_85",
+      "source": "fc_penLips",
+      "target": "fc_lips",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_fc_86",
+      "source": "fc_lips",
+      "target": "fc_outline",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s5"
+    },
+    {
+      "id": "e_fc_87",
+      "source": "fc_lines",
+      "target": "fc_ovalPts",
+      "sourceHandle": "out-points",
+      "targetHandle": "in-source"
+    },
+    {
+      "id": "e_fc_88",
+      "source": "fc_ovalAt",
+      "target": "fc_ovalPts",
+      "sourceHandle": "out-values",
+      "targetHandle": "in-indices"
+    },
+    {
+      "id": "e_fc_89",
+      "source": "fc_ovalPts",
+      "target": "fc_oval",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-points"
+    },
+    {
+      "id": "e_fc_90",
+      "source": "fc_penOval",
+      "target": "fc_oval",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_fc_91",
+      "source": "fc_oval",
+      "target": "fc_outline",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s6"
+    },
+    {
+      "id": "e_fc_92",
+      "source": "fc_outline",
+      "target": "fc_lines",
+      "sourceHandle": "out-grouped",
+      "targetHandle": "in-layer"
+    },
+    {
+      "id": "e_fc_93",
+      "source": "fc_web",
+      "target": "fc_sky",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s1"
+    },
+    {
+      "id": "e_fc_94",
+      "source": "fc_stars",
+      "target": "fc_sky",
+      "sourceHandle": "out-layer",
+      "targetHandle": "in-s2"
+    },
+    {
+      "id": "e_fc_95",
+      "source": "fc_lines",
+      "target": "fc_sky",
+      "sourceHandle": "out-layer",
+      "targetHandle": "in-s3"
+    },
+    {
+      "id": "e_fc_96",
+      "source": "fc_lm",
+      "target": "fc_present",
+      "sourceHandle": "out-detected",
+      "targetHandle": "in-condition"
+    },
+    {
+      "id": "e_fc_97",
+      "source": "fc_sky",
+      "target": "fc_present",
+      "sourceHandle": "out-grouped",
+      "targetHandle": "in-sky"
+    },
+    {
+      "id": "e_fc_98",
+      "source": "fc_present",
+      "target": "fc_pass",
+      "sourceHandle": "out-sky",
+      "targetHandle": "in-s1"
+    },
+    {
+      "id": "e_fc_99",
+      "source": "fc_pass",
+      "target": "fc_present",
+      "sourceHandle": "out-grouped",
+      "targetHandle": "in-layer"
+    },
+    {
+      "id": "e_fc_100",
+      "source": "fc_present",
+      "target": "fc_light",
+      "sourceHandle": "out-layer",
+      "targetHandle": "in-layer"
+    },
+    {
+      "id": "e_fc_101",
+      "source": "fc_light",
+      "target": "fc_shimmer",
+      "sourceHandle": "out-blended",
+      "targetHandle": "in-input"
+    },
+    {
+      "id": "e_fc_102",
+      "source": "fc_mouth",
+      "target": "fc_gleam",
+      "sourceHandle": "out-open",
+      "targetHandle": "in-t"
+    },
+    {
+      "id": "e_fc_103",
+      "source": "fc_shimmer",
+      "target": "fc_glow",
+      "sourceHandle": "out-out",
+      "targetHandle": "in-input"
+    },
+    {
+      "id": "e_fc_104",
+      "source": "fc_gleam",
+      "target": "fc_glow",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-intensity"
+    },
+    {
+      "id": "e_fc_105",
+      "source": "fc_glow",
+      "target": "fc_screen",
+      "sourceHandle": "out-out",
+      "targetHandle": "in-layers"
+    }
+  ]
+}

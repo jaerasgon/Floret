@@ -207,8 +207,8 @@ fixture generator until phase 8 is green, then gets archived.
 
 1. **UI framework.** Recommend **egui**: it draws with the same wgpu renderer
    as the preview (no glue between UI and canvas), is mature on all three
-   OSes, has existing node-graph widgets to learn from, and is very well
-   known to AI coding tools. Its default look is "developer tool", so we
+   OSes, has existing node-graph widgets to learn from, and is widely
+   documented. Its default look is "developer tool", so we
    build a full custom theme from Floret's existing design tokens.
    Alternatives: **GPUI** (Zed's framework — very polished feel, but its
    API still changes often and it uses its own renderer, not wgpu, so

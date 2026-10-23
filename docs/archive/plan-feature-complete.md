@@ -169,7 +169,7 @@ product; the TypeScript web app is reference-only.
 
 ## Suggested execution
 
-Run in parallel as worktree agents (keep shared-file edits additive), then
+Run in parallel in separate worktrees (keep shared-file edits additive), then
 merge one by one with tests between merges:
 
 | Agent | Items |

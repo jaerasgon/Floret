@@ -1,10 +1,10 @@
 # New nodes log
 
 Capabilities that Library samples needed and Floret lacked: what was
-missing, why, the design and the sample that needs it. Each agent keeps its
+missing, why, the design and the sample that needs it. Each round of work keeps its
 own section.
 
-## Systems samples (agent)
+## Systems samples
 
 The 15 "Systems" samples (`native/samples/sys-*.flora`) combine several
 subsystems each. Three capabilities were missing; all three were built as
@@ -73,7 +73,7 @@ in `docs/archive/plan-feature-complete.md`.
 - **SVG export** for the plotter sample (`sys-plotter` exports PNG; its
   "clean output" toggle prepares the frame for that).
 
-## Interactive samples (agent)
+## Interactive samples
 
 Fifteen interaction-first samples (Library categories **Interactive** and
 **Sound**: `play-*`, `sound-*`). Most of what they do is built from existing
@@ -140,7 +140,7 @@ canvas does) but the editor reacts too; their comments suggest Focus mode.
 Letting the preview own plain keys while it is hovered would fix it, but
 changes existing UI behaviour, so it is left for the owner to decide.
 
-## No-code samples (agent A2)
+## No-code samples (part A2)
 
 The owner wants every Library sample built from visual nodes, with no
 `math/expression` node in any patch (the node stays available). The 525
@@ -261,7 +261,7 @@ mixes several patterns).
   circles, negative margin, layer shapes with a group transform, holes,
   lines by stroke, margins on outlines, empty points / shapes, NaN, zero
   sizes).
-- **Check frame:** `/tmp/agent-nodes-a2/hit-test.png` (Scatter points
+- **Check frame:** a check image, not kept in the repo (Scatter points
   against a star and a rose Curve; Switch in `index` mode with `wrap` turns
   `index` 0 / 1 / −1 into three colours).
 
@@ -284,7 +284,7 @@ mixes several patterns).
   curves join, phase 0 = phase 1 ≠ phase 0.37, rose through the centre, star
   corners and notches, spiral radii, zero / negative counts, zero radius,
   irrational ratios, NaN params, determinism, periods from ratios).
-- **Check frame:** `/tmp/agent-nodes-a2/curve.png`.
+- **Check frame:** a check image (not kept in the repo).
 
 ### Plot (`geometry/plot`, Draw)
 
@@ -300,7 +300,7 @@ mixes several patterns).
 - **Tests:** `geometry/plot.rs` (line spans the box, zero / fixed ranges,
   values past a fixed range, flat series, area closing and clamped
   baseline, bar slots and gap, empty / NaN / one value / zero size).
-- **Check frame:** `/tmp/agent-nodes-a2/plot.png`.
+- **Check frame:** a check image (not kept in the repo).
 
 ### Move (`particles/move`, Particles & Physics)
 
@@ -366,7 +366,7 @@ mixes several patterns).
   `NodeInit` addition, left alone while the engine core is being reworked).
 - Curve could take `count` per mode defaults (stars need few points) and a
   `close` override for open Lissajous segments.
-## No-code samples (agent A1)
+## No-code samples (part A1)
 
 The owner wants every Library sample built from visual nodes, with no
 `math/expression` formulas (525 Expression nodes in 43 samples, to be
@@ -531,7 +531,7 @@ or the new mode's absence is the old behaviour); pins recorded in
   start off-centre. *Test:* `spread/tests.rs`
   `spiral_and_fibonacci_leave_an_inner_hole`.
 
-## No-code rebuild (agent B1)
+## No-code rebuild (part B1)
 
 Twelve interaction-first samples rebuilt with no Expression node (182
 formulas): play-breakout, sound-music-box, sound-step-sequencer,
@@ -608,7 +608,7 @@ inputs → subpatches → Group → Renderer. One capability was missing.
   State's `next` or another single, non-lifting pin warns and the State
   doesn't update; use State* (`state/spread`) or Lookup `pick` there.
 
-## No-code rebuild (agent B3)
+## No-code rebuild (part B3)
 
 Sixteen samples rebuilt with no Expression node: the three Sound samples
 (Keyboard Synth, Hand Theremin, Mic Bloom), Rose Curve (was Expression
@@ -666,7 +666,7 @@ signal flow. One existing node needed a fix; nothing new was built.
   few nodes), so re-running it over all samples rewrites files nobody
   changed.
 
-## No-code rebuild (agent B2)
+## No-code rebuild (part B2)
 
 The 15 Systems samples (`sys-*`) rebuilt without a single `math/expression`
 node (260 formulas before). Almost everything was already expressible with
@@ -735,7 +735,7 @@ sample. Afterwards the weather's finer noise layer got rounder drift numbers
 layer by a hair; the owner asked for the same behaviour rather than a pixel
 match.
 
-## Feedback pairs: Write → Read (agent)
+## Feedback pairs: Write → Read
 
 Owner's golden rule: feedback across frames goes only through a Write →
 Read pair. No new node types; the pairs became easier to make and read.
@@ -801,7 +801,7 @@ No new nodes. Eight Interactive samples (`play-breakout`,
   play, 150 frames) matches the old files exactly for all eight (layers
   within 0, no pixel differs).
 
-## Samples onto Write → Read pairs (agent E3a)
+## Samples onto Write → Read pairs (part E3a)
 
 No new nodes. Thirteen Library samples lost their State / State\* loops
 and backward wires; every loop became a named Write → Read pair

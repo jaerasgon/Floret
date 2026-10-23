@@ -15,4 +15,7 @@ history, not current documentation. For how Floret works today, see the
 | `plan-feature-complete.md` | The feature-complete plan, including its "Ground rules" for adding nodes and samples. |
 | `feature-complete-summary.md` | What the feature-complete plan delivered. |
 | `sample-review.md` | An earlier review of the Library samples. |
+| `sample-review-beta.md` | A sheet of every Library sample to tick off by hand before the beta. |
+| `new-nodes-log.md` | The log of nodes and modes added so that samples could be built from visual nodes, with the reason for each. |
+| `CHANGELOG-web-era.md` | The development log of the earlier web version. |
 | `design-specs/` | Design specs for individual features. |

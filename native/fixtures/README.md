@@ -1,7 +1,7 @@
 # Golden fixtures
 
 Recorded from the TypeScript app (the reference implementation) by
-`npm run fixtures:export` (`tools/fixtures/export.fixture.ts`). The Rust
+`npm run fixtures:export` from `web-legacy/` (`web-legacy/tools/fixtures/export.fixture.ts`). The Rust
 engine must reproduce them. Don't edit by hand; re-export instead.
 
 | File | Contents |

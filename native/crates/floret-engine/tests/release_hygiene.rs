@@ -366,10 +366,10 @@ fn every_workspace_crate_is_apache_2() {
 #[test]
 fn other_manifests_and_scripts_agree_on_the_licence() {
     let root = repo_root();
-    let package = read(&root, "package.json");
+    let package = read(&root, "web-legacy/package.json");
     assert!(
         package.contains("\"license\": \"Apache-2.0\""),
-        "package.json licence"
+        "web-legacy/package.json licence"
     );
     // The app bundle carries the NOTICE next to the LICENSE (the bundle
     // script is shared by `floret.sh install` and the release packaging).

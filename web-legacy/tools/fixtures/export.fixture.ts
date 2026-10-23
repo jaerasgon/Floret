@@ -10,7 +10,7 @@
  * reproduce the same outputs. Everything here is deterministic: fixed time
  * steps, scripted mouse/keyboard, seeded Math.random, mocked clocks.
  *
- * Run: npm run fixtures:export
+ * Run (from web-legacy/): npm run fixtures:export
  */
 import { it } from 'vitest';
 import fs from 'node:fs';
@@ -34,7 +34,7 @@ import { toEditorRefs } from '../../src/editor/editor-state/util';
 import { resetRegistries } from '../../src/editor/editor-state/registry-sync';
 import type { FloretEdge, FloretNode } from '../../src/editor/editor-state';
 
-const ROOT = path.resolve(__dirname, '../..');
+const ROOT = path.resolve(__dirname, '../../..');
 const FIXTURES_DIR = path.join(ROOT, 'native/fixtures');
 // The graphs the traces were recorded from. The app's sample library
 // (native/samples + its catalogue.json) has moved on and is kept there.

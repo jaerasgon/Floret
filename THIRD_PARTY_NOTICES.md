@@ -10,8 +10,8 @@ Floret itself is free and open source under the Apache License 2.0: see
 app under **Help → Licenses…**, and in the macOS app bundle under
 `Floret.app/Contents/Resources/`.
 
-These notices cover the native app (`native/`). The old TypeScript web app at
-the repository root (`src/`, `package.json`) is a reference only and is not
+These notices cover the native app (`native/`). The old TypeScript web app in
+`web-legacy/` is a reference only and is not
 part of what ships; its npm dependencies are not listed.
 
 Contents:

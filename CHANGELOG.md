@@ -39,7 +39,7 @@ are new. The README is rewritten for the public repository.
   wiring with drop-to-search, inline values you can type or scrub, regions
   (ForEach, If, Cache …) and subpatches, undo for everything, node gravity
   (dragging a node gently pulls its neighbours along) and auto-arrange.
-- **175 built-in samples** in the Library, including 48 step-by-step
+- **177 built-in samples** in the Library, including 48 step-by-step
   tutorials, each opening fitted and centred with a tidy layout.
 - **Export:** PNG at 1×/2×/4×, and MP4 (H.264), GIF or PNG sequences of
   seamless loops, rendered offline at a fixed frame rate.

@@ -47,7 +47,7 @@ If Floret is useful to you, you can help keep it growing with a tip on
   subdivision, Truchet and wave-function-collapse tiles, wallpaper
   symmetry, stippling, plexus lines, contour maps, layouts that animate.
 - **Bypass** any node to compare with and without it (B).
-- **175 samples**, including 48 short tutorials, in the Library
+- **177 samples**, including 48 short tutorials, in the Library
   (File → Samples Library, Cmd+Shift+O), all built from visual nodes. The
   Library's tiles can be zoomed.
 - **Variations and presets:** roll a new variation with Cmd+Shift+R, save

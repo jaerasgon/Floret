@@ -76,7 +76,7 @@ iconutil -c icns "$ICONSET" -o "$APP/Contents/Resources/Floret.icns"
 rm -rf "$(dirname "$ICONSET")"
 
 # The licence and the third-party notices travel with the app (the same texts
-# are in Help > Licenses). NOTICE is copied when the repository has one.
+# are in Help → Licenses). NOTICE is copied when the repository has one.
 for f in LICENSE NOTICE THIRD_PARTY_NOTICES.md native/licenses/crates.md native/licenses/licence-texts.txt; do
   if [ -f "$ROOT/$f" ]; then
     cp "$ROOT/$f" "$APP/Contents/Resources/"

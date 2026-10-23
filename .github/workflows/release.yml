@@ -133,8 +133,9 @@ jobs:
       - uses: actions/upload-artifact@v7
         with:
           name: floret-${{ matrix.name }}
-          # (SHA256SUMS in dist/ is left out: the release job writes the
-          # list for all files.)
+          # Both the versioned files and the version-free copies. (SHA256SUMS
+          # in dist/ is left out: the release job writes the list for all
+          # files.)
           path: |
             dist/Floret-*
           if-no-files-found: error
@@ -163,7 +164,12 @@ jobs:
       - name: Check what was built
         run: |
           ls -l files || true
-          for f in "Floret-${VERSION}-macos-arm64.dmg" "Floret-${VERSION}-macos-arm64.zip"; do
+          # Each package script writes a versioned file and a copy without
+          # the version in its name (Floret-macos-arm64.dmg, ...). Both are
+          # attached to the release; the download table in the notes names
+          # the versioned ones.
+          for f in "Floret-${VERSION}-macos-arm64.dmg" "Floret-${VERSION}-macos-arm64.zip" \
+                   "Floret-macos-arm64.dmg" "Floret-macos-arm64.zip"; do
             if [ ! -f "files/$f" ]; then
               echo "::error::The Apple-silicon Mac build is missing ($f): no release is made."
               exit 1
@@ -172,11 +178,14 @@ jobs:
           for p in macos-x86_64.dmg windows-x86_64.zip linux-x86_64.tar.gz; do
             if ! ls "files/Floret-${VERSION}-${p%%.*}"* >/dev/null 2>&1; then
               echo "::warning::No ${p} build in this run; the release goes ahead without it."
+            elif [ ! -f "files/Floret-${p}" ]; then
+              echo "::warning::The version-free copy Floret-${p} is missing."
             fi
           done
       - name: Checksums and notes
         run: |
           cd files
+          # Every file, the version-free copies included.
           sha256sum Floret-* > SHA256SUMS.txt
           cat SHA256SUMS.txt
           cd ..

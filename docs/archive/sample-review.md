@@ -46,7 +46,7 @@ hardware or the network, not bugs). The table below covers every sample.
   run to run; the ranking is stable. The median sample takes 5.8 ms and the
   90th percentile 41 ms.
 
-Screenshots: `/tmp/agent-samples-review/` (not in the repo).
+Screenshots were kept locally and are not in the repo.
 - `sheets/<Category>-f060.png` are the contact sheets; `sheets/<Category>-strips-N.png` show frames 1 | 60 | 240.
 - `frames/` holds every saved frame, with `review-final.tsv` alongside.
 - `app/` holds the in-app screenshots, including the `*-mouse.png`, `*-drag.png`, `*-keys.png` and `*-click.png` interaction strips.

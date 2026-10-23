@@ -1,14 +1,12 @@
 # Helping Floret grow
 
 Thank you for caring about Floret. It is free and open source, it is early,
-and what you tell us shapes where it goes next.
+and what you tell me shapes where it goes next.
 
 The best way to help is to **send feedback**: report what breaks, what
-confuses you, and what you wish it could do. Please send ideas, bugs and
-requests here rather than forking, so Floret gets better for everyone
-instead of splitting into many small copies. The licence lets you fork
-(see [Licence](#licence)), but a fix or idea sent back helps every artist
-using Floret, including you.
+confuses you, and what you wish it could do. The licence lets you fork
+(see [Licence](#licence)), but I'd be grateful if ideas and fixes came back
+to this project, so Floret gets better for everyone.
 
 ## How to send feedback
 
@@ -17,7 +15,7 @@ using Floret, including you.
 | Report a bug | [Open a bug report](https://github.com/jaerasgon/Floret/issues/new?template=bug_report.yml) |
 | Share an idea, a wish or how it felt to use | [Open a feedback issue](https://github.com/jaerasgon/Floret/issues/new?template=feedback.yml) |
 | Say something privately, or you would rather not use GitHub | Email [Floret.make@gmail.com](mailto:Floret.make@gmail.com) |
-| Report a security problem | Email, please, not a public issue: see [SECURITY.md](SECURITY.md) |
+| Report a security problem | Please email me rather than opening a public issue: see [SECURITY.md](SECURITY.md) |
 
 You do not need to know how to code. "I was trying to make X and got stuck
 at Y" is one of the most useful things you can write.
@@ -28,6 +26,7 @@ The more of this you include, the faster it gets fixed:
 
 1. **The sample or patch.** The sample's name as the Library shows it (for
    example "Slime Mould"), or your `.flora` file attached to the issue.
+   GitHub won't take a `.flora` file as it is, so zip it first.
 2. **Steps.** What you did, in order, as exactly as you can.
 3. **What happened, and what you expected instead.**
 4. **The version.** Shown in Floret → About Floret on a Mac (Help → About Floret on
@@ -47,8 +46,7 @@ bugs worth reporting.
 
 Pull requests are welcome, with one request: **open an issue first** and
 describe what you would like to change. Floret has firm design rules (below),
-and a quick conversation saves you from writing something that cannot be
-merged. Small fixes such as a typo or an obvious bug can go straight to a
+and a quick conversation saves you from writing something I can't merge. Small fixes such as a typo or an obvious bug can go straight to a
 pull request.
 
 A pull request is easiest to review when it is small, does one thing, says
@@ -76,7 +74,7 @@ follow them.
 - **Every change should genuinely improve Floret**, not just copy another
   tool's feature.
 - **No royalty-bearing codecs shipped by Floret.** On macOS, video goes
-  through Apple's AVFoundation.
+  through Apple's AVFoundation; Windows and Linux use OpenH264.
 
 ### Build and test from source
 
@@ -115,5 +113,5 @@ author, Jaafer Elsadig.
 
 ## Be kind
 
-Everyone here is learning, and most of us are artists first. Please follow
+Everyone here is learning, and most people are artists first. Please follow
 the [Code of Conduct](CODE_OF_CONDUCT.md).

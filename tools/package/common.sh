@@ -166,3 +166,25 @@ add_checksum() {
   mv "$sums.tmp" "$sums"
   echo "  sha256 $sum  $name"
 }
+
+# stable_name FILE — the file name without the version in it:
+# "Floret-0.2.0-linux-x86_64.tar.gz" becomes "Floret-linux-x86_64.tar.gz".
+stable_name() {
+  local name stable
+  name="$(basename "$1")"
+  stable="${name/"-$VERSION-"/-}"
+  [ "$stable" != "$name" ] || die "cannot make a version-free name from '$name' (version $VERSION)"
+  echo "$stable"
+}
+
+# add_stable_copy FILE — also write FILE under its version-free name next to
+# it in $DIST, and checksum that too. The same bytes under a name that never
+# changes, so a link to it never needs editing for a new release. Call it
+# after FILE is final.
+add_stable_copy() {
+  local stable
+  stable="$(stable_name "$1")"
+  rm -f "$DIST/$stable"
+  cp "$1" "$DIST/$stable"
+  add_checksum "$DIST/$stable"
+}

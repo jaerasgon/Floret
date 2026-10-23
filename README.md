@@ -4,7 +4,14 @@
 creative technology tool where you wire shapes, motion, noise, particles, text, images and sound
 together to create visuals or interactive experiences. No code needed.
 
-![Floret with the Kaleido Slime sample open: the patch on the node canvas, its live preview on the right, the Inspector below](docs/images/floret-window.png)
+## A look inside
+
+| | |
+|---|---|
+| ![The Weather Map sample: a node graph of subpatches, a ForEach region and Vector Math nodes on the left, and on the right the live preview of a pressure map with coloured bands, isobars, wind flow lines and arrows](docs/images/floret-system.png) | ![The Flock Herder sample: the Simulation, Palette, Connect Points and subpatch nodes on the left, and on the right the live preview of colourful flocks of boids with trails](docs/images/floret-particles.png) |
+| **A complex system: Weather Map.** Many small parts wired into a living pressure map. | **A particles sample: Flock Herder.** 320 swimming creatures that follow, gather and leave trails. |
+| ![The Library: every sample by category, with search](docs/images/floret-library.png) | ![Floret with several panels docked: the Generative Poster sample with the canvas, Library, live preview and Presets](docs/images/floret-panels.png) |
+| **The Library.** Open any sample and take it apart. | **Your layout.** Panels dock, split and float wherever you like. |
 
 ## What you can make
 
@@ -25,14 +32,7 @@ Floret is free and will stay free. If it's useful to you and you'd like to
 help me keep building it, you can leave a tip on
 [Ko-fi](https://ko-fi.com/jaerasgon). Feedback helps just as much.
 
-## A look inside
 
-| | |
-|---|---|
-| ![The Weather Map sample: a node graph of subpatches, a ForEach region and Vector Math nodes on the left, and on the right the live preview of a pressure map with coloured bands, isobars, wind flow lines and arrows](docs/images/floret-system.png) | ![The Flock Herder sample: the Simulation, Palette, Connect Points and subpatch nodes on the left, and on the right the live preview of colourful flocks of boids with trails](docs/images/floret-particles.png) |
-| **A complex system: Weather Map.** Many small parts wired into a living pressure map. | **A particles sample: Flock Herder.** 320 swimming creatures that follow, gather and leave trails. |
-| ![The Library: every sample by category, with search](docs/images/floret-library.png) | ![Floret with several panels docked: the Generative Poster sample with the canvas, Library, live preview and Presets](docs/images/floret-panels.png) |
-| **The Library.** Open any sample and take it apart. | **Your layout.** Panels dock, split and float wherever you like. |
 
 ## Why you might like it
 

@@ -11,6 +11,7 @@ use floret_engine::devices::{CameraFrame, CameraRequest};
 use floret_engine::image::Image;
 use nokhwa::utils::{
     ApiBackend, CameraFormat, CameraIndex, FrameFormat, RequestedFormat, RequestedFormatType,
+    Resolution,
 };
 use std::collections::HashMap;
 use std::sync::atomic::{AtomicBool, Ordering};
@@ -320,27 +321,62 @@ fn permission() -> Result<(), String> {
     Ok(())
 }
 
-/// The format closest to 640×480 at 30 fps that `convert` understands. Size
-/// matters most, then frame rate; on a tie MJPEG wins, then the raw formats.
-/// NV12 comes last: on macOS nokhwa asks for a 10-bit variant of it.
-fn pick_format(all: &[CameraFormat]) -> Option<CameraFormat> {
-    let rank = |f: FrameFormat| FORMATS.iter().position(|x| *x == f).unwrap_or(usize::MAX);
-    let key = |f: &CameraFormat| {
-        let r = f.resolution();
-        let dx = i64::from(r.width()) - 640;
-        let dy = i64::from(r.height()) - 480;
-        let rate = (i64::from(f.frame_rate()) - 30).unsigned_abs();
-        let rank = if f.format() == FrameFormat::NV12 {
-            FORMATS.len()
-        } else {
-            rank(f.format())
-        };
-        (dx * dx + dy * dy, rate, rank)
+/// Formats to try, best first: sizes nearest 640×480, then MJPEG and the raw
+/// formats, then frame rates from 30 down. NV12 comes last: on macOS nokhwa
+/// asks for a 10-bit variant of it.
+fn candidates() -> Vec<CameraFormat> {
+    const SIZES: &[(u32, u32)] = &[
+        (640, 480),
+        (640, 360),
+        (800, 600),
+        (848, 480),
+        (960, 540),
+        (1024, 576),
+        (1280, 720),
+        (1280, 960),
+        (1920, 1080),
+        (352, 288),
+        (320, 240),
+    ];
+    const RATES: &[u32] = &[30, 60, 25, 24, 20, 15, 10, 5];
+    let dist = |(w, h): (u32, u32)| {
+        let (dx, dy) = (i64::from(w) - 640, i64::from(h) - 480);
+        dx * dx + dy * dy
     };
-    all.iter()
-        .filter(|f| FORMATS.contains(&f.format()))
-        .min_by_key(|f| key(f))
-        .copied()
+    let mut sizes = SIZES.to_vec();
+    sizes.sort_by_key(|s| dist(*s));
+    let mut out = Vec::new();
+    for (w, h) in sizes {
+        for format in FORMATS {
+            for fps in RATES {
+                out.push(CameraFormat::new(Resolution::new(w, h), *format, *fps));
+            }
+        }
+    }
+    out.sort_by_key(|f| f.format() == FrameFormat::NV12);
+    out
+}
+
+/// Opens the camera at the best format it accepts. nokhwa's `Closest` only
+/// looks at one frame format, and on a Mac some listed formats are refused
+/// when set, so each candidate is tried until one is accepted.
+fn open(index: &CameraIndex) -> Result<nokhwa::Camera, String> {
+    let want = CameraFormat::new(Resolution::new(640, 480), FrameFormat::MJPEG, 30);
+    let closest = RequestedFormat::with_formats(RequestedFormatType::Closest(want), FORMATS);
+    let mut last = match nokhwa::Camera::new(index.clone(), closest) {
+        Ok(c) => return Ok(c),
+        Err(e) => e,
+    };
+    for format in candidates() {
+        let exact = RequestedFormat::with_formats(RequestedFormatType::Exact(format), FORMATS);
+        match nokhwa::Camera::new(index.clone(), exact) {
+            Ok(c) => return Ok(c),
+            // Unknown to this camera: not worth reporting.
+            Err(nokhwa::NokhwaError::OpenDeviceError(..)) => {}
+            Err(e) => last = e,
+        }
+    }
+    Err(last.to_string())
 }
 
 fn capture(shared: &Shared, device: &str, list: &Mutex<DeviceList>) {
@@ -363,23 +399,10 @@ fn capture(shared: &Shared, device: &str, list: &Mutex<DeviceList>) {
             None => return shared.fail(format!("Camera “{device}” isn't connected.")),
         }
     };
-    // Open with whatever format the camera offers first, then move to the best
-    // one. nokhwa's own `Closest` only looks at one frame format, so a camera
-    // without MJPEG (every Mac camera) used to fail to open.
-    let any = RequestedFormat::with_formats(RequestedFormatType::None, FORMATS);
-    let mut cam = match nokhwa::Camera::new(index, any) {
+    let mut cam = match open(&index) {
         Ok(c) => c,
         Err(e) => return shared.fail(format!("Couldn't open the camera: {e}")),
     };
-    let best = cam
-        .compatible_camera_formats()
-        .ok()
-        .and_then(|all| pick_format(&all));
-    if let Some(best) = best.filter(|b| *b != cam.camera_format()) {
-        let exact = RequestedFormat::with_formats(RequestedFormatType::Exact(best), FORMATS);
-        // A camera that refuses the switch keeps the format it opened with.
-        let _ = cam.set_camera_requset(exact);
-    }
     if let Err(e) = cam.open_stream() {
         return shared.fail(format!("Couldn't start the camera: {e}"));
     }
@@ -420,7 +443,6 @@ fn capture(shared: &Shared, device: &str, list: &Mutex<DeviceList>) {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use nokhwa::utils::Resolution;
 
     #[test]
     fn converts_raw_formats_and_mirrors() {
@@ -442,24 +464,19 @@ mod tests {
     }
 
     #[test]
-    fn picks_a_format_even_without_mjpeg() {
+    fn candidates_start_at_vga_and_cover_cameras_without_mjpeg() {
+        let all = candidates();
         let f = |w, h, fmt, fps| CameraFormat::new(Resolution::new(w, h), fmt, fps);
-        // A Mac camera: no MJPEG, no 640×480.
-        let mac = [
-            f(1280, 720, FrameFormat::YUYV, 30),
-            f(1920, 1080, FrameFormat::YUYV, 30),
-            f(1280, 720, FrameFormat::NV12, 30),
-        ];
-        assert_eq!(pick_format(&mac), Some(f(1280, 720, FrameFormat::YUYV, 30)));
-        // A webcam: 640×480 wins, MJPEG over YUYV, nearest frame rate.
-        let cam = [
-            f(1920, 1080, FrameFormat::MJPEG, 30),
-            f(640, 480, FrameFormat::YUYV, 30),
-            f(640, 480, FrameFormat::MJPEG, 15),
-            f(640, 480, FrameFormat::MJPEG, 30),
-        ];
-        assert_eq!(pick_format(&cam), Some(f(640, 480, FrameFormat::MJPEG, 30)));
-        assert_eq!(pick_format(&[]), None);
+        assert_eq!(all[0], f(640, 480, FrameFormat::MJPEG, 30));
+        assert!(all.contains(&f(1280, 720, FrameFormat::YUYV, 30)));
+        // NV12 only after every other format.
+        let first_nv12 = all.iter().position(|c| c.format() == FrameFormat::NV12);
+        assert!(all[..first_nv12.unwrap()]
+            .iter()
+            .all(|c| c.format() != FrameFormat::NV12));
+        // Nearer sizes come before farther ones.
+        let at = |w| all.iter().position(|c| c.resolution().width() == w);
+        assert!(at(1280) < at(1920));
     }
 
     #[test]

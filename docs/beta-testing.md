@@ -54,7 +54,7 @@ The shortcuts in this guide use the Mac keys. On Windows and Linux, use
 
 Work through this list, and add anything else you think of:
 
-- [ ] Open the Library (File → Samples Library, Cmd+Shift+O). Browse the
+- [ ] Open the Library (File → Library, Cmd+Shift+O). Browse the
       categories and open a few samples. Try the tile zoom (Cmd + scroll,
       or pinch).
 - [ ] Play with the **Tutorial** samples, in order ("01 · Hello Rect"

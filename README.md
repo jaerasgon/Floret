@@ -72,7 +72,7 @@ Want to build it yourself? See [docs/building.md](docs/building.md).
 
 ## Try it in two minutes
 
-1. Open Floret and choose **File → Samples Library** (Cmd+Shift+O; Ctrl
+1. Open Floret and choose **File → Library** (Cmd+Shift+O; Ctrl
    instead of Cmd on Windows and Linux).
 2. Open a sample, for example **01 · Hello Rect**. A note on the canvas
    explains the idea.

@@ -23,7 +23,7 @@ Mac.
   [full list](https://github.com/jaerasgon/Floret/blob/main/NODES.md) says
   what each one does.
 - **175 samples to learn from**, including 48 short tutorials that each
-  teach one idea, in the Library (File → Samples Library).
+  teach one idea, in the Library (File → Library).
 - **Find your look.** Roll a new variation with one key, save the ones you
   like as presets, and morph between them.
 - **Export** a still as PNG, or a seamless loop as MP4, GIF or a sequence of

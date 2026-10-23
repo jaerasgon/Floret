@@ -163,7 +163,10 @@ pub fn groups() -> Vec<Section> {
                 menu(ExportPng),
                 menu(ExportVideo),
                 (keys(none, Key::Escape), "Leave focus mode / close output"),
-                (Trigger::Text("F / ⌘F / F11"), "Toggle full screen (focus mode)"),
+                (
+                    Trigger::Text("F / ⌘F / F11"),
+                    "Toggle full screen (focus mode)",
+                ),
             ],
         },
         Section {

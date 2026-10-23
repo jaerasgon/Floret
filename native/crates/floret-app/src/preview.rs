@@ -524,10 +524,11 @@ impl PreviewPanel {
         if toggle_focus {
             self.focus = Some(id.to_string());
         }
-        if !ui.ctx().egui_wants_keyboard_input() && ui.rect_contains_pointer(ui.max_rect()) {
-            if ui.input_mut(|i| i.consume_key(egui::Modifiers::NONE, egui::Key::F)) {
-                self.focus = Some(id.to_string());
-            }
+        if !ui.ctx().egui_wants_keyboard_input()
+            && ui.rect_contains_pointer(ui.max_rect())
+            && ui.input_mut(|i| i.consume_key(egui::Modifiers::NONE, egui::Key::F))
+        {
+            self.focus = Some(id.to_string());
         }
         self.header(ui, rs, engine, outputs, id);
         let size = ui.available_size();
@@ -646,7 +647,9 @@ impl PreviewPanel {
                     .on_hover_text("Show this renderer fullscreen on a display (Esc closes it)");
                 if ui
                     .add(quiet_button(icons::ARROW_SQUARE_OUT, "Detach", false))
-                    .on_hover_text("Open this preview in its own window (can move to other screens)")
+                    .on_hover_text(
+                        "Open this preview in its own window (can move to other screens)",
+                    )
                     .clicked()
                 {
                     self.detach = Some(id.clone());

@@ -1,6 +1,6 @@
 # Sample review sheet (beta)
 
-All 177 Library samples, by category, to tick off by hand before the beta. Generated from `native/samples/catalogue.json`: open each one from File → Samples Library (Cmd+Shift+O) and fill in the columns.
+All 179 Library samples, by category, to tick off by hand before the beta. Generated from `native/samples/catalogue.json`: open each one from File → Library (Cmd+Shift+O) and fill in the columns.
 
 - **Opens**: the sample opens with no error or warning.
 - **Runs and looks right**: it animates smoothly and the picture matches its description.
@@ -19,7 +19,7 @@ Mark a column with `x` when it is fine.
 | Fields | 9 |
 | Nature | 9 |
 | Shaders | 10 |
-| Image | 11 |
+| Image | 13 |
 | Pixel | 1 |
 | Sound | 7 |
 | Feedback | 3 |

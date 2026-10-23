@@ -8,3 +8,13 @@ CLAUDE.md export-ignore
 # These two name the folder above, and a release has no use for them.
 .gitattributes export-ignore
 .gitignore export-ignore
+
+# The language bar on GitHub: the app is the Rust code in native/. The old web
+# app, its assets, the generated licence lists and the docs don't count.
+web-legacy/** linguist-vendored
+public/** linguist-vendored
+native/licenses/** linguist-generated
+native/fixtures/** linguist-generated
+native/samples/** linguist-generated
+docs/** linguist-documentation
+*.md linguist-documentation

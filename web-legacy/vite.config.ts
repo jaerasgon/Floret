@@ -8,6 +8,9 @@ import { floretBus } from './floret-bus.vite.mjs';
 
 export default defineConfig({
   plugins: [react(), floretBus()],
+  // The images, fonts and MediaPipe files live at the repository root, where
+  // the native app reads them too.
+  publicDir: '../public',
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url)),
@@ -24,7 +27,7 @@ export default defineConfig({
     // src/test/setup-canvas.ts.
     setupFiles: ['./src/test/setup-canvas.ts'],
     // Agent worktrees and the native port contain copies / non-TS code.
-    exclude: [...configDefaults.exclude, '.*/**', 'native/**'],
+    exclude: [...configDefaults.exclude, '.*/**'],
   },
   server: {
     port: 5173,

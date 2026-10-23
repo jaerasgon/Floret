@@ -6,7 +6,7 @@
 //   png/<name>.png       the TS renderer's output for each synthetic scene
 //   png/<sample>-f<i>.png  …and for recorded trace scenes (fixtures/traces)
 //
-// Usage (from the repo root, after `npm install`; `ONLY=name,…` limits it):
+// Usage (from the repo root, after `npm install` in `web-legacy/`; `ONLY=name,…` limits it):
 //   PLAYWRIGHT_BROWSERS_PATH=/opt/pw-browsers \
 //   PLAYWRIGHT_MODULE=/path/to/node_modules/playwright/index.mjs \
 //   node native/crates/floret-render/reference/generate.mjs

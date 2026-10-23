@@ -121,11 +121,11 @@ pub fn groups() -> Vec<Section> {
                 ),
                 (
                     keys(none, Key::OpenBracket),
-                    "Move the selected wire earlier on its pin",
+                    "Reorder a pin's wires: move the selected wire earlier",
                 ),
                 (
                     keys(none, Key::CloseBracket),
-                    "Move the selected wire later on its pin",
+                    "Reorder a pin's wires: move the selected wire later",
                 ),
                 (Trigger::Text("Alt + drop a wire"), "Probe the value"),
             ],
@@ -353,6 +353,13 @@ fn kbd(ui: &mut egui::Ui, text: &str, wrap: bool) {
         });
 }
 
+/// The About window's version line. The version is the workspace's
+/// (`native/Cargo.toml`), pre-release suffix included (`0.2.0-beta.1`), so
+/// bug reports from a beta can be told apart.
+fn version_line() -> String {
+    format!("Version {}", env!("CARGO_PKG_VERSION"))
+}
+
 /// The About window. `gpu` describes the adapter in use.
 pub fn about_window(ctx: &egui::Context, open: &mut bool, gpu: &str) {
     egui::Window::new("About Floret")
@@ -369,15 +376,10 @@ pub fn about_window(ctx: &egui::Context, open: &mut bool, gpu: &str) {
                         .strong()
                         .font(crate::theme::medium(20.0)),
                 );
-                ui.label(
-                    RichText::new(format!("Version {}", env!("CARGO_PKG_VERSION"))).color(FG_1),
-                );
+                ui.label(RichText::new(version_line()).color(FG_1));
                 ui.add_space(6.0);
                 ui.label(
-                    RichText::new(
-                        "A node-based creative tool: wire shapes, motion, sound and data together.",
-                    )
-                    .color(FG_1),
+                    RichText::new("Make generative art by wiring nodes together.").color(FG_1),
                 );
                 ui.add_space(6.0);
                 ui.label(RichText::new(gpu).small().color(FG_2));
@@ -388,6 +390,32 @@ pub fn about_window(ctx: &egui::Context, open: &mut bool, gpu: &str) {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    /// The version `native/Cargo.toml` gives the whole workspace.
+    fn workspace_version() -> &'static str {
+        include_str!("../../../Cargo.toml")
+            .lines()
+            .find_map(|l| l.strip_prefix("version = \"")?.strip_suffix('"'))
+            .expect("version in native/Cargo.toml")
+    }
+
+    #[test]
+    fn the_version_shown_is_the_workspace_version() {
+        let v = workspace_version();
+        assert!(!v.is_empty());
+        // The About window, the crash report and the bottom bar all read
+        // the same build-time version.
+        assert_eq!(env!("CARGO_PKG_VERSION"), v);
+        assert_eq!(version_line(), format!("Version {v}"));
+        let report = crate::crash::Report {
+            stage: crate::crash::Stage::Tick,
+            message: String::new(),
+            location: String::new(),
+            backtrace: String::new(),
+            recovery: Err(String::new()),
+        };
+        assert!(report.details().starts_with(&format!("Floret {v} —")));
+    }
 
     #[test]
     fn every_editing_and_app_command_is_listed() {

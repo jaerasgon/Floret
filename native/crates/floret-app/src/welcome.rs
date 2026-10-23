@@ -112,7 +112,7 @@ impl Welcome {
                     .font(crate::theme::medium(22.0)),
             );
         });
-        ui.label(RichText::new("Wire shapes, motion, sound and data together.").color(FG_1));
+        ui.label(RichText::new("Make generative art by wiring nodes together.").color(FG_1));
         ui.add_space(14.0);
         let wide =
             |t: &str| egui::Button::new(RichText::new(t).size(14.0)).min_size(vec2(220.0, 30.0));
@@ -122,7 +122,7 @@ impl Welcome {
         if ui.add(wide("Open…")).clicked() {
             action = Some(Action::Open);
         }
-        if ui.add(wide("Browse samples")).clicked() {
+        if ui.add(wide("Library")).clicked() {
             action = Some(Action::Library);
         }
         ui.add_space(16.0);
@@ -193,7 +193,7 @@ impl Welcome {
             ui,
             "See what's happening",
             "Hover a pin for its live value; select a node to inspect it. \
-             Help › Keyboard Shortcuts lists every key.",
+             Help → Keyboard Shortcuts lists every key.",
         );
 
         let mut ui_foot = ui_body.new_child(
@@ -210,7 +210,7 @@ impl Welcome {
             if ui.button("Close").clicked() {
                 self.open = false;
             }
-            if ui.button("All samples").clicked() {
+            if ui.button("Library").clicked() {
                 action = Some(Action::Library);
             }
         });

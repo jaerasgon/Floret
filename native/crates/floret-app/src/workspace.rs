@@ -1545,12 +1545,8 @@ fn render_tab_content(
 
 /// Centred hint on an empty canvas.
 fn empty_hint(ui: &mut egui::Ui) {
-    theme::paint_empty_state(
-        ui,
-        ui.max_rect(),
-        "Empty patch",
-        "Double-click or press Tab to add a node · ? for shortcuts · Library for samples",
-    );
+    let (title, hint) = theme::EMPTY_CANVAS;
+    theme::paint_empty_state(ui, ui.max_rect(), title, hint);
 }
 
 /// The selected node: type, description and live output values.

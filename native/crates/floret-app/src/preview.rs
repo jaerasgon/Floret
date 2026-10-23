@@ -1000,17 +1000,11 @@ fn empty(ui: &mut egui::Ui, engine: Option<&Engine>, h: f32) {
     ui.painter()
         .rect_filled(area, egui::CornerRadius::same(6), theme::BG_0);
     let (title, line) = match engine {
-        None => (
-            "Compile error",
-            "The patch didn't compile — see the status bar.",
-        ),
-        Some(e) if e.graph.nodes.is_empty() => (
-            "Empty canvas",
-            "Drag nodes from the palette, or pick a sample.",
-        ),
+        None => ("This patch has a problem.", "See the status bar."),
+        Some(e) if e.graph.nodes.is_empty() => theme::EMPTY_CANVAS,
         Some(_) => (
             "No Renderer",
-            "Add a Renderer and wire your drawing into its layers port.",
+            "Add a Renderer and wire your drawing into its layer pin.",
         ),
     };
     theme::paint_empty_state(ui, area, title, line);

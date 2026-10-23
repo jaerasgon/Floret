@@ -11,7 +11,6 @@ use floret_engine::devices::{CameraFrame, CameraRequest};
 use floret_engine::image::Image;
 use nokhwa::utils::{
     ApiBackend, CameraFormat, CameraIndex, FrameFormat, RequestedFormat, RequestedFormatType,
-    Resolution,
 };
 use std::collections::HashMap;
 use std::sync::atomic::{AtomicBool, Ordering};
@@ -321,6 +320,29 @@ fn permission() -> Result<(), String> {
     Ok(())
 }
 
+/// The format closest to 640×480 at 30 fps that `convert` understands. Size
+/// matters most, then frame rate; on a tie MJPEG wins, then the raw formats.
+/// NV12 comes last: on macOS nokhwa asks for a 10-bit variant of it.
+fn pick_format(all: &[CameraFormat]) -> Option<CameraFormat> {
+    let rank = |f: FrameFormat| FORMATS.iter().position(|x| *x == f).unwrap_or(usize::MAX);
+    let key = |f: &CameraFormat| {
+        let r = f.resolution();
+        let dx = i64::from(r.width()) - 640;
+        let dy = i64::from(r.height()) - 480;
+        let rate = (i64::from(f.frame_rate()) - 30).unsigned_abs();
+        let rank = if f.format() == FrameFormat::NV12 {
+            FORMATS.len()
+        } else {
+            rank(f.format())
+        };
+        (dx * dx + dy * dy, rate, rank)
+    };
+    all.iter()
+        .filter(|f| FORMATS.contains(&f.format()))
+        .min_by_key(|f| key(f))
+        .copied()
+}
+
 fn capture(shared: &Shared, device: &str, list: &Mutex<DeviceList>) {
     if let Err(e) = permission() {
         return shared.fail(e);
@@ -341,12 +363,23 @@ fn capture(shared: &Shared, device: &str, list: &Mutex<DeviceList>) {
             None => return shared.fail(format!("Camera “{device}” isn't connected.")),
         }
     };
-    let want = CameraFormat::new(Resolution::new(640, 480), FrameFormat::MJPEG, 30);
-    let format = RequestedFormat::with_formats(RequestedFormatType::Closest(want), FORMATS);
-    let mut cam = match nokhwa::Camera::new(index, format) {
+    // Open with whatever format the camera offers first, then move to the best
+    // one. nokhwa's own `Closest` only looks at one frame format, so a camera
+    // without MJPEG (every Mac camera) used to fail to open.
+    let any = RequestedFormat::with_formats(RequestedFormatType::None, FORMATS);
+    let mut cam = match nokhwa::Camera::new(index, any) {
         Ok(c) => c,
         Err(e) => return shared.fail(format!("Couldn't open the camera: {e}")),
     };
+    let best = cam
+        .compatible_camera_formats()
+        .ok()
+        .and_then(|all| pick_format(&all));
+    if let Some(best) = best.filter(|b| *b != cam.camera_format()) {
+        let exact = RequestedFormat::with_formats(RequestedFormatType::Exact(best), FORMATS);
+        // A camera that refuses the switch keeps the format it opened with.
+        let _ = cam.set_camera_requset(exact);
+    }
     if let Err(e) = cam.open_stream() {
         return shared.fail(format!("Couldn't start the camera: {e}"));
     }
@@ -387,6 +420,7 @@ fn capture(shared: &Shared, device: &str, list: &Mutex<DeviceList>) {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use nokhwa::utils::Resolution;
 
     #[test]
     fn converts_raw_formats_and_mirrors() {
@@ -405,6 +439,27 @@ mod tests {
         let px = nv12.pixel(1, 1);
         assert!(px[0] > 240 && px[1] < 10 && px[2] < 10, "{px:?}");
         assert!(convert(FrameFormat::YUYV, 4, 4, &[0; 8], false).is_err());
+    }
+
+    #[test]
+    fn picks_a_format_even_without_mjpeg() {
+        let f = |w, h, fmt, fps| CameraFormat::new(Resolution::new(w, h), fmt, fps);
+        // A Mac camera: no MJPEG, no 640×480.
+        let mac = [
+            f(1280, 720, FrameFormat::YUYV, 30),
+            f(1920, 1080, FrameFormat::YUYV, 30),
+            f(1280, 720, FrameFormat::NV12, 30),
+        ];
+        assert_eq!(pick_format(&mac), Some(f(1280, 720, FrameFormat::YUYV, 30)));
+        // A webcam: 640×480 wins, MJPEG over YUYV, nearest frame rate.
+        let cam = [
+            f(1920, 1080, FrameFormat::MJPEG, 30),
+            f(640, 480, FrameFormat::YUYV, 30),
+            f(640, 480, FrameFormat::MJPEG, 15),
+            f(640, 480, FrameFormat::MJPEG, 30),
+        ];
+        assert_eq!(pick_format(&cam), Some(f(640, 480, FrameFormat::MJPEG, 30)));
+        assert_eq!(pick_format(&[]), None);
     }
 
     #[test]

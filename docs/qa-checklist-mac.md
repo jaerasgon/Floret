@@ -147,6 +147,8 @@ from the repo folder.
 
 - [ ] Open `webcam-mosaic` and click its toggle. macOS asks for camera access the first time. Allow it, and the mosaic follows the camera.
 - [ ] Open `body-tracking` and click its toggle. Dots and lines follow your body or hands, each person or hand in its own colour.
+- [ ] Open `pose-ribbons` and click its toggle. Step back so the camera sees you and wave: your head, hands and feet leave glowing ribbons that thin out behind them. Step out of view and the ribbons melt away.
+- [ ] Open `face-constellation` and click its toggle. Your face becomes twinkling stars joined by threads, with eyes, lips and outline picked out. Open your mouth wide: the threads reach further and the glow brightens.
 - [ ] The camera light turns off when you turn the toggle off or open another patch.
 - [ ] With an external webcam plugged in, the Camera node's device dropdown lists it, and picking it works.
 

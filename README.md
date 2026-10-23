@@ -23,7 +23,7 @@ together to create visuals or interactive experiences. No code needed.
 - **Type and motion:** variable fonts, kinetic type, loops and easing.
 - **Things that react:** to sound, MIDI, your camera, your hands and face.
 
-You don't start from nothing: Floret comes with **175 sample patches**,
+You don't start from nothing: Floret comes with **177 sample patches**,
 including **48 short tutorials** that each teach one idea.
 
 ## Support Floret

@@ -339,7 +339,47 @@ const BUNDLED_COVERS: &[(&str, &str)] = &[
         "a stand-in camera frame: a figure against a bright wall",
     ),
     ("tut-49-fft", "a chord on a stand-in microphone"),
+    (
+        "pose-ribbons",
+        "a dancing figure from a stand-in pose tracker",
+    ),
+    (
+        "face-constellation",
+        "a talking face from a stand-in face tracker",
+    ),
 ];
+
+/// Stand-in people for the tracking covers (shared with
+/// `floret-engine`'s tests).
+#[path = "../../floret-engine/tests/common/fake_bodies.rs"]
+mod fake_bodies;
+
+/// The frame [`update_covers`] is on, for the stand-in people to move by.
+static COVER_FRAME: std::sync::atomic::AtomicU32 = std::sync::atomic::AtomicU32::new(0);
+
+/// What a stand-in pose or face tracker finds one frame into a cover: one
+/// dancing figure, or one talking face.
+fn stand_in_people(
+    trackers: &[floret_engine::landmarks::Tracker],
+) -> Vec<floret_engine::devices::LandmarkLayer> {
+    use floret_engine::landmarks::Tracker;
+    let t = f64::from(COVER_FRAME.load(std::sync::atomic::Ordering::Relaxed)) / 60.0;
+    trackers
+        .iter()
+        .filter_map(|&tracker| {
+            let det = match tracker {
+                Tracker::Pose => fake_bodies::pose(t),
+                Tracker::Face => fake_bodies::talking_face(t),
+                Tracker::Hands => return None,
+            };
+            Some(floret_engine::devices::LandmarkLayer {
+                tracker,
+                dets: vec![det],
+                ids: vec![0],
+            })
+        })
+        .collect()
+}
 
 #[test]
 fn bundled_covers_match_the_list() {
@@ -453,6 +493,9 @@ impl floret_engine::devices::Devices for CoverDevices {
         req: &floret_engine::devices::LandmarksRequest,
     ) -> Result<Option<Vec<floret_engine::devices::LandmarkLayer>>, String> {
         use floret_engine::landmarks::Tracker;
+        if req.start && req.trackers.iter().any(|t| *t != Tracker::Hands) {
+            return Ok(Some(stand_in_people(&req.trackers)));
+        }
         if !req.start || !req.trackers.contains(&Tracker::Hands) {
             return Ok(None);
         }
@@ -501,7 +544,8 @@ fn update_covers() {
         let mut mic = audio.attach_test_mic(RATE);
         let mut n = 0u64;
         // An A minor chord of bright tones (harmonics up to ~6 kHz).
-        let mut chord = |_f: u32| {
+        let mut chord = |f: u32| {
+            COVER_FRAME.store(f, std::sync::atomic::Ordering::Relaxed);
             for _ in 0..800 {
                 let t = n as f64 / f64::from(RATE);
                 let v: f64 = [220.0, 261.63, 329.63]

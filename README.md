@@ -1,18 +1,10 @@
 # Floret
 
-**Make generative art by connecting boxes.** Floret is a free, open-source
-tool where you wire shapes, motion, noise, particles, text, images and sound
-together, and watch the picture change live as you edit. No code needed.
+**Make generative art!.** Floret is a free, open-source
+creative technology tool where you wire shapes, motion, noise, particles, text, images and sound
+together to create visuals or interactive experiences. No code needed.
 
 ![Floret with the Kaleido Slime sample open: the patch on the node canvas, its live preview on the right, the Inspector below](docs/images/floret-window.png)
-
-Every box (a *node*) does one small thing: draw a shape, add noise, pick a
-colour, move something in a loop. Connect them and you have a picture, a
-pattern, a particle storm or a moving poster. Change any number while it
-plays and see the result straight away. When you love it, save a still, a
-seamless loop or a whole sheet of variations.
-
-Floret is **in beta**: it works, it is growing, and your feedback shapes it.
 
 ## What you can make
 
@@ -26,6 +18,12 @@ Floret is **in beta**: it works, it is growing, and your feedback shapes it.
 
 You don't start from nothing: Floret comes with **175 sample patches**,
 including **48 short tutorials** that each teach one idea.
+
+## Support Floret
+
+Floret is free and will stay free. If it's useful to you and you'd like to
+help me keep building it, you can leave a tip on
+[Ko-fi](https://ko-fi.com/jaerasgon). Feedback helps just as much.
 
 ## A look inside
 
@@ -62,29 +60,12 @@ including **48 short tutorials** that each teach one idea.
 | **Windows** (experimental) | [Floret for Windows (.zip)](https://github.com/jaerasgon/Floret/releases/download/v0.2.0-beta.1/Floret-0.2.0-beta.1-windows-x86_64.zip) |
 | **Linux** (experimental) | [Floret for Linux (.tar.gz)](https://github.com/jaerasgon/Floret/releases/download/v0.2.0-beta.1/Floret-0.2.0-beta.1-linux-x86_64.tar.gz) (needs ALSA, `libasound2`) |
 
-Not sure which Mac you have? Click the Apple menu, then **About This Mac**.
-"Chip: Apple M…" means Apple silicon; "Processor: Intel…" means Intel. On Mac,
-open the `.dmg` and drag Floret into Applications.
-
-Floret isn't signed yet, so your system asks you to confirm the first launch.
-The [release page](https://github.com/jaerasgon/Floret/releases/tag/v0.2.0-beta.1)
-has the two or three clicks for each system. Camera and microphone data stay
-on your computer.
-
 Want to build it yourself? See [docs/building.md](docs/building.md).
 
-## Try it in two minutes
-
-1. Open Floret and choose **File, then Samples Library**.
-2. Open **01 · Hello Rect**, then the other tutorials in order. Each has a
-   short note on the canvas.
-3. Click any number on a node and drag it. Then press **Tab** to add a node of
-   your own.
 
 ## Feedback and help
 
-Floret is young, and the most useful thing you can do is tell me what
-happens when you use it: what worked, what confused you, what you wished
+Floret is young, and needs your input to grow: what worked, what confused you, what you wished
 it could do.
 
 - [Report a bug](https://github.com/jaerasgon/Floret/issues/new?template=bug_report.yml)
@@ -93,14 +74,9 @@ it could do.
 - A `.flora` file that misbehaves, plus a sentence about what you expected,
   is perfect.
 
-Please send ideas here rather than forking, so Floret gets better for
-everyone. [CONTRIBUTING.md](CONTRIBUTING.md) has the details.
+Please send ideas here = [CONTRIBUTING.md](CONTRIBUTING.md) has the details.
 
-## Support Floret
 
-Floret is free and will stay free. If it's useful to you and you'd like to
-help me keep building it, you can leave a tip on
-[Ko-fi](https://ko-fi.com/jaerasgon). Feedback helps just as much.
 
 ## Licence
 

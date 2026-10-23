@@ -6,8 +6,9 @@
 #
 # The notes are: a download table for the files found in ARTIFACT_DIR, how to
 # open an unsigned app on each system, a note that the Windows and Linux
-# builds are experimental, then the body of docs/release-notes-draft.md (its
-# first heading is dropped: the release title says it). Used by
+# builds are experimental, a rule line, then the body of docs/release-notes.md
+# (its first heading is dropped: the release title says it). The notes file
+# must therefore not repeat the download or first-launch steps. Used by
 # .github/workflows/release.yml.
 #
 set -euo pipefail
@@ -20,13 +21,13 @@ TAG="$1"
 DIR="$2"
 VERSION="${TAG#v}"
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
-DRAFT="$ROOT/docs/release-notes-draft.md"
+NOTES="$ROOT/docs/release-notes.md"
 [ -d "$DIR" ] || {
   echo "error: not a folder: $DIR" >&2
   exit 1
 }
-[ -f "$DRAFT" ] || {
-  echo "error: missing $DRAFT" >&2
+[ -f "$NOTES" ] || {
+  echo "error: missing $NOTES" >&2
   exit 1
 }
 
@@ -57,7 +58,7 @@ row() {
 cat <<EOF
 ## Downloads
 
-This is a **beta**: it is for trying Floret and telling us what breaks. The
+This is a **beta**: it is for trying Floret and telling me what breaks. The
 apps are **not signed**, so each system asks you to confirm the first launch
 (steps below).
 
@@ -69,6 +70,10 @@ row "macOS, Intel" "$mac_x64.dmg $mac_x64.zip" "Needs macOS 11 or later."
 row "Windows 10 / 11, 64-bit" "$win.zip" "**Experimental.**"
 row "Linux, 64-bit (x86_64)" "$lin.tar.gz" "**Experimental.**"
 cat <<EOF
+
+Each file is also attached under a name without the version number (for
+example \`Floret-macos-arm64.dmg\`): the same bytes, with a name that stays
+the same from release to release.
 
 \`SHA256SUMS.txt\` lists the checksum of every file, to check a download
 (\`shasum -a 256 -c SHA256SUMS.txt\` on macOS, \`sha256sum -c SHA256SUMS.txt\`
@@ -82,7 +87,7 @@ on Linux, \`Get-FileHash <file>\` in Windows PowerShell).
 
 **macOS.** Open the \`.dmg\` and drag Floret into Applications (or unzip the
 \`.zip\`). Open Floret. macOS says it cannot verify the app: click Done, open
-**System Settings > Privacy & Security**, scroll down, click **Open Anyway**
+**System Settings → Privacy & Security**, scroll down, click **Open Anyway**
 next to Floret, and confirm. (On macOS 14 and earlier: right-click Floret,
 choose Open, then Open.) Or, in Terminal, remove the download mark first:
 
@@ -102,5 +107,5 @@ to your applications menu.
 ---
 
 EOF
-# The draft's body, without its first "# " heading line.
-awk 'BEGIN { skipped = 0 } !skipped && /^# / { skipped = 1; next } { print }' "$DRAFT"
+# The notes' body, without its first "# " heading line.
+awk 'BEGIN { skipped = 0 } !skipped && /^# / { skipped = 1; next } { print }' "$NOTES"

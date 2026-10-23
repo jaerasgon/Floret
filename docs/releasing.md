@@ -12,12 +12,15 @@ press Run workflow.
    release points at the exact commit the workflow runs on. The workflow
    file itself has to be on the repository's default branch for the Run
    workflow button to appear.
-2. Check the notes in `docs/release-notes-draft.md`. They become the body of
-   the release, below an automatic download table.
-3. On GitHub: **Actions > release > Run workflow**. Choose the branch, then:
-   - **tag**: `v0.2.0-beta.1` (letters: `v`, then `MAJOR.MINOR.PATCH`,
-     optionally `-beta.1` and so on). The tag is created at the commit being
-     built when the release is published.
+2. Check the notes in `docs/release-notes.md`. They become the body of
+   the release, below an automatic header with the download table and the
+   first-launch steps, so the notes don't repeat those. (Its first `#`
+   heading is dropped; the release title says it.)
+3. On GitHub: **Actions → release → Run workflow**. Choose the branch, then:
+   - **tag**: for example `v0.2.0-beta.1`. It is a `v`, then three numbers
+     with dots (`0.2.0`), then optionally a dash and a label such as
+     `-beta.1`. The tag is created at the commit being built when the
+     release is published.
    - **prerelease**: on for betas.
    - **draft**: on, so you can look at it before anyone else can.
    - **run_tests**: runs `cargo test --workspace` on Linux first (off by
@@ -54,9 +57,30 @@ same tag.
 | `SHA256SUMS.txt` | the release job, for all of the above |
 
 `<version>` is the tag without the `v`. Every package carries `LICENSE`,
-`NOTICE` (when the repository has one), `THIRD_PARTY_NOTICES.md` and the
-licence lists (`native/licenses/`). The binary embeds the samples, fonts,
+`NOTICE`, `THIRD_PARTY_NOTICES.md` and the licence lists
+(`native/licenses/`). The binary embeds the samples, fonts,
 models and node reference, so nothing else is needed.
+
+### Names that don't change
+
+Each download is also attached with the version left out of its name. These
+are identical copies (same bytes) of the versioned files, so a link to one
+never needs editing when a new release comes out:
+
+| Stable name | Same file as |
+| --- | --- |
+| `Floret-macos-arm64.dmg` / `.zip` | `Floret-<version>-macos-arm64.dmg` / `.zip` |
+| `Floret-macos-x86_64.dmg` / `.zip` | `Floret-<version>-macos-x86_64.dmg` / `.zip` |
+| `Floret-windows-x86_64.zip` | `Floret-<version>-windows-x86_64.zip` |
+| `Floret-linux-x86_64.tar.gz` | `Floret-<version>-linux-x86_64.tar.gz` |
+
+The packaging scripts write both copies, and `SHA256SUMS.txt` lists both.
+The download table in the release notes names the versioned files. A link
+to a stable name on one specific release looks like
+`https://github.com/jaerasgon/Floret/releases/download/v0.2.0-beta.1/Floret-macos-arm64.dmg`.
+GitHub's `releases/latest/download/<name>` form follows the newest
+**published release that is not marked pre-release**, so it only works once
+a full release exists.
 
 The Mac bundle is the same one `./floret.sh install` makes: both call
 `tools/package/build-macos-app.sh`, so there is one place that knows what
@@ -98,7 +122,7 @@ carry a short note saying the same (`READ ME FIRST.txt` on the Mac,
 `README.txt` on Windows and Linux).
 
 - **macOS.** Drag Floret.app into Applications and open it. macOS refuses.
-  Open **System Settings > Privacy & Security**, scroll to the message about
+  Open **System Settings → Privacy & Security**, scroll to the message about
   Floret and click **Open Anyway**. (On macOS 14 and earlier, right-click the
   app, Open, Open.) Or remove the download mark in Terminal:
   `xattr -dr com.apple.quarantine /Applications/Floret.app`. The app has an
@@ -120,7 +144,7 @@ carry a short note saying the same (`READ ME FIRST.txt` on the Mac,
 - **Windows and Linux are experimental.** They build and package, but have
   had far less testing than the Mac app. The Windows exe has no icon of its
   own, and `.flora` files are not associated with Floret on Windows or
-  Linux (open them from File > Open or by dragging onto the app).
+  Linux (open them from File → Open or by dragging onto the app).
 - **Linux:** only x86_64, built on Ubuntu 22.04 so it runs on distributions
   with glibc 2.35 or newer. Wayland and X11 are both built in; sound needs
   the ALSA library at run time. No AppImage, deb or rpm yet.

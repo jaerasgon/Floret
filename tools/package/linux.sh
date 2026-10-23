@@ -7,6 +7,7 @@
 # Builds the release binary and writes
 #
 #   dist/Floret-<version>-linux-x86_64.tar.gz
+#   dist/Floret-linux-x86_64.tar.gz           (the same file, no version in the name)
 #   dist/SHA256SUMS                           (a line per file)
 #
 # The archive holds one folder, Floret-<version>/, with the binary, the
@@ -93,7 +94,7 @@ Add it to your applications menu (optional)
 Licences
   LICENSE and NOTICE are Floret's licence. THIRD_PARTY_NOTICES.md and the
   files in licenses/ list the libraries and fonts it contains. The same
-  texts are in Help > Licenses inside the app.
+  texts are in Help → Licenses inside the app.
 EOF
 
 # Fixed owner, sorted names: the same input gives the same archive layout.
@@ -101,5 +102,7 @@ tar --sort=name --owner=0 --group=0 --numeric-owner -C "$STAGE" -czf "$ARCHIVE" 
 
 echo "→ Checksums"
 add_checksum "$ARCHIVE"
+add_stable_copy "$ARCHIVE"
 
 echo "✓ $ARCHIVE"
+echo "✓ $DIST/$(stable_name "$ARCHIVE")"

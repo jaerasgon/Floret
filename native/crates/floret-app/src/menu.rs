@@ -93,7 +93,7 @@ impl Command {
             ClearRecent => "Clear Recent",
             Save => "Save",
             SaveAs => "Save As…",
-            BrowseSamples => "Samples Library",
+            BrowseSamples => "Library",
             ExportPng => "Export PNG…",
             ExportVideo => "Export Video / GIF…",
             ExportVariations => "Export Variations…",

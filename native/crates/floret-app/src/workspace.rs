@@ -788,37 +788,44 @@ impl Workspace {
                 .with_title(title_text)
                 .with_inner_size([720.0, 540.0]);
             let mut rev = None;
-            ui.ctx().show_viewport_immediate(viewport_id, builder, |ui, _class| {
-                egui::CentralPanel::default().show(ui, |ui| {
-                    ui.horizontal(|ui| {
-                        if ui
-                            .button(RichText::new(format!("{} Dock to Main Window", icons::ARROW_U_UP_LEFT)).small())
-                            .clicked()
-                        {
-                            dock_back = true;
+            ui.ctx()
+                .show_viewport_immediate(viewport_id, builder, |ui, _class| {
+                    egui::CentralPanel::default().show(ui, |ui| {
+                        ui.horizontal(|ui| {
+                            if ui
+                                .button(
+                                    RichText::new(format!(
+                                        "{} Dock to Main Window",
+                                        icons::ARROW_U_UP_LEFT
+                                    ))
+                                    .small(),
+                                )
+                                .clicked()
+                            {
+                                dock_back = true;
+                            }
+                        });
+                        ui.separator();
+                        if let Some(act) = render_tab_content(
+                            ui,
+                            &tab,
+                            shell,
+                            &mut self.help,
+                            &mut self.library,
+                            &mut self.presets,
+                            &mut self.query,
+                            self.last_selected.as_deref(),
+                            &mut self.profiling,
+                            &mut self.canvas_shown,
+                            &mut rev,
+                        ) {
+                            action = Some(act);
                         }
                     });
-                    ui.separator();
-                    if let Some(act) = render_tab_content(
-                        ui,
-                        &tab,
-                        shell,
-                        &mut self.help,
-                        &mut self.library,
-                        &mut self.presets,
-                        &mut self.query,
-                        self.last_selected.as_deref(),
-                        &mut self.profiling,
-                        &mut self.canvas_shown,
-                        &mut rev,
-                    ) {
-                        action = Some(act);
+                    if ui.input(|i| i.viewport().close_requested()) {
+                        close = true;
                     }
                 });
-                if ui.input(|i| i.viewport().close_requested()) {
-                    close = true;
-                }
-            });
             if let Some(t) = rev {
                 reveal(&mut self.dock, t);
             }
@@ -1468,8 +1475,7 @@ fn render_tab_content(
             if !sh.crash.render_ok() {
                 return None;
             }
-            let (preview, rs, engine, outputs) =
-                (&mut *sh.preview, sh.rs, sh.engine, sh.outputs);
+            let (preview, rs, engine, outputs) = (&mut *sh.preview, sh.rs, sh.engine, sh.outputs);
             sh.crash.run(crash::Stage::Render, sh.patch, || {
                 preview.show_renderer(ui, rs, engine, outputs, id);
             });
@@ -1529,10 +1535,7 @@ fn render_tab_content(
         Tab::Presets => presets.ui(ui, sh.patch, sh.view),
         Tab::Shader => {
             let runtime = sh.preview.shader_errors();
-            if sh
-                .shader
-                .show_in(ui, sh.patch, selected, runtime)
-            {
+            if sh.shader.show_in(ui, sh.patch, selected, runtime) {
                 sh.view.commit(sh.patch);
             }
         }
@@ -1542,12 +1545,8 @@ fn render_tab_content(
 
 /// Centred hint on an empty canvas.
 fn empty_hint(ui: &mut egui::Ui) {
-    theme::paint_empty_state(
-        ui,
-        ui.max_rect(),
-        "Empty patch",
-        "Double-click or press Tab to add a node · ? for shortcuts · Library for samples",
-    );
+    let (title, hint) = theme::EMPTY_CANVAS;
+    theme::paint_empty_state(ui, ui.max_rect(), title, hint);
 }
 
 /// The selected node: type, description and live output values.

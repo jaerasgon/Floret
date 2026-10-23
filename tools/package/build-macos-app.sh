@@ -10,7 +10,9 @@
 #
 #     BINARY   the built `floret` executable
 #     APP      the bundle to create (an existing one is replaced)
-#     VERSION  CFBundleShortVersionString, e.g. 0.2.0
+#     VERSION  the app version, e.g. 0.2.0 or 0.2.0-beta.1. Apple wants digits
+#              only in CFBundleShortVersionString, so a pre-release suffix
+#              (everything from the first - or +) is cut off there.
 #     BUILD    CFBundleVersion, e.g. the commit count
 #     COMMIT   short commit hash, shown in Get Info
 #     LABEL    version text for Get Info (default: VERSION), e.g. 0.2.0-beta.1
@@ -31,6 +33,7 @@ VERSION="$3"
 BUILD="$4"
 COMMIT="$5"
 LABEL="${6:-$VERSION}"
+SHORT_VERSION="${VERSION%%[-+]*}" # 0.2.0-beta.1 -> 0.2.0
 
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 MACOS="$ROOT/native/crates/floret-app/macos"
@@ -48,7 +51,7 @@ printf 'APPL????' >"$APP/Contents/PkgInfo"
 PB=/usr/libexec/PlistBuddy
 PLIST="$APP/Contents/Info.plist"
 $PB -c "Add :CFBundleIconFile string Floret" "$PLIST"
-$PB -c "Add :CFBundleShortVersionString string $VERSION" "$PLIST"
+$PB -c "Add :CFBundleShortVersionString string $SHORT_VERSION" "$PLIST"
 $PB -c "Add :CFBundleVersion string $BUILD" "$PLIST"
 $PB -c "Add :CFBundleGetInfoString string Floret $LABEL ($COMMIT)" "$PLIST"
 $PB -c "Add :LSMinimumSystemVersion string 11.0" "$PLIST"

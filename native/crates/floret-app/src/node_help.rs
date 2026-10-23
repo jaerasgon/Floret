@@ -506,6 +506,154 @@ mod tests {
         );
     }
 
+    /// One side of a row's pins cell as `NODES.md` writes it (and
+    /// `tools/nodes-doc-check.py` generates it): the names a user sees on
+    /// the node, the saved name in brackets where it differs, names of one
+    /// type grouped (`w, h: number`), `*` after a spread type, `—` for none.
+    fn pins_side(ports: &[PortSpec], input: bool) -> String {
+        if ports.is_empty() {
+            return "—".into();
+        }
+        let mut groups: Vec<(String, Vec<String>)> = Vec::new();
+        for p in ports {
+            let shown = crate::editor::values::display_label(p, input);
+            let name = if shown == p.name {
+                shown
+            } else {
+                format!("{shown} ({})", p.name)
+            };
+            let star = if p.kind == PortKind::Spread { "*" } else { "" };
+            let ty = format!("{}{star}", type_name(p.ty));
+            match groups.last_mut() {
+                Some((t, names)) if *t == ty => names.push(name),
+                _ => groups.push((ty, vec![name])),
+            }
+        }
+        let list: Vec<String> = groups
+            .iter()
+            .map(|(t, names)| format!("{}: {t}", names.join(", ")))
+            .collect();
+        format!("`{}`", list.join(", "))
+    }
+
+    /// Splits `inputs → outputs` at the first arrow outside backticks.
+    fn split_arrow(cell: &str) -> Option<(&str, &str)> {
+        let mut ticks = false;
+        for (i, ch) in cell.char_indices() {
+            match ch {
+                '`' => ticks = !ticks,
+                '→' if !ticks => {
+                    return Some((cell[..i].trim(), cell[i + '→'.len_utf8()..].trim()))
+                }
+                _ => {}
+            }
+        }
+        None
+    }
+
+    /// Whether `name` appears in `text` as a whole word.
+    fn mentions(text: &str, name: &str) -> bool {
+        let word = |c: char| c.is_alphanumeric() || c == '_';
+        text.match_indices(name).any(|(i, m)| {
+            !text[..i].chars().next_back().is_some_and(word)
+                && !text[i + m.len()..].chars().next().is_some_and(word)
+        })
+    }
+
+    /// Rows of `md` whose title or pins differ from the catalogue: the
+    /// title must be `**Label** · `type``; a side with fixed pins must be
+    /// exactly what [`pins_side`] writes; a side whose pins change with a
+    /// setting is hand-written and must still name each of its default
+    /// pins. One message per offending row.
+    fn nodes_md_mismatches(cat: &Catalogue, md: &str) -> Vec<String> {
+        let mut out = Vec::new();
+        for line in md.lines().filter(|l| l.starts_with("| **")) {
+            let cells: Vec<String> = line
+                .replace("\\|", "\u{1}")
+                .split('|')
+                .map(|c| c.trim().replace('\u{1}', "|"))
+                .collect();
+            let [_, head, ports, ..] = cells.as_slice() else {
+                continue;
+            };
+            let Some(spec) = head.split('`').nth(1).and_then(|ty| cat.get(ty)) else {
+                continue; // an unknown type is reported on its own
+            };
+            let title = format!("**{}** · `{}`", spec.label, spec.ty);
+            if *head != title {
+                out.push(format!("{}: title is {head}, should be {title}", spec.ty));
+            }
+            let Some((ins, outs)) = split_arrow(ports) else {
+                out.push(format!("{}: pins cell has no `→`", spec.ty));
+                continue;
+            };
+            for (word, input, pins, dynamic, got) in [
+                ("inputs", true, &spec.inputs, spec.has_dynamic_inputs, ins),
+                (
+                    "outputs",
+                    false,
+                    &spec.outputs,
+                    spec.has_dynamic_outputs,
+                    outs,
+                ),
+            ] {
+                if dynamic {
+                    for p in pins {
+                        let shown = crate::editor::values::display_label(p, input);
+                        if !mentions(got, &p.name) && !mentions(got, &shown) {
+                            out.push(format!("{}: {word} don't mention `{shown}`", spec.ty));
+                        }
+                    }
+                } else if got != pins_side(pins, input) {
+                    out.push(format!(
+                        "{}: {word} are {got}, should be {}",
+                        spec.ty,
+                        pins_side(pins, input)
+                    ));
+                }
+            }
+        }
+        out
+    }
+
+    #[test]
+    fn nodes_md_checks_titles_and_pins() {
+        let cat = Catalogue::from_json(
+            r#"{"nodes":[
+                {"type":"a/rect","category":"A","label":"Rect","inputs":[
+                    {"name":"pos","type":"vec2","kind":"single"},
+                    {"name":"w","type":"number","kind":"single"},
+                    {"name":"h","type":"number","kind":"single"}],
+                 "outputs":[{"name":"shape","type":"layer","kind":"single"}],"eval":"raw"},
+                {"type":"a/dyn","category":"A","label":"Dyn","dynamicInputs":true,
+                 "inputs":[{"name":"x","type":"number","kind":"single"}],
+                 "outputs":[{"name":"result","type":"number","kind":"single"}],"eval":"raw"}
+            ]}"#,
+        )
+        .expect("catalogue");
+        let ok =
+            "| **Rect** · `a/rect` | `pos: vec2, w, h: number` → `layer (shape): layer` | x |\n\
+                  | **Dyn** · `a/dyn` | per setting: `x` → `value (result): number` | x |\n";
+        assert_eq!(nodes_md_mismatches(&cat, ok), Vec::<String>::new());
+        // The saved output name instead of the one on the node, a wrong
+        // title, a missing pin, and a dynamic cell that forgets its pin.
+        let bad = "| **Rectangle** · `a/rect` | `pos: vec2, w: number` → `shape: layer` | x |\n\
+                   | **Dyn** · `a/dyn` | per setting → `value (result): number` | x |\n";
+        let found = nodes_md_mismatches(&cat, bad);
+        assert_eq!(found.len(), 4, "{found:?}");
+        assert!(found[0].starts_with("a/rect: title is **Rectangle**"));
+        assert!(found[1].contains("inputs are `pos: vec2, w: number`"));
+        assert!(found[2].contains("outputs are `shape: layer`"));
+        assert_eq!(found[3], "a/dyn: inputs don't mention `x`");
+    }
+
+    #[test]
+    fn nodes_md_has_no_web_era_wording() {
+        for word in ["Native-only", "TypeScript", "src/nodes"] {
+            assert!(!NODES_MD.contains(word), "NODES.md still says {word:?}");
+        }
+    }
+
     #[test]
     fn nodes_md_documents_every_visible_node() {
         let (missing, unknown) = nodes_md_gaps(Catalogue::builtin(), nodes_md());
@@ -519,6 +667,15 @@ mod tests {
             unknown.is_empty(),
             "NODES.md has rows for node types that aren't in the catalogue (remove or fix them): {}",
             unknown.join(", ")
+        );
+        let differ = nodes_md_mismatches(Catalogue::builtin(), NODES_MD);
+        assert!(
+            differ.is_empty(),
+            "{} NODES.md rows name a node or pin differently from the catalogue \
+             (`python3 -I tools/nodes-doc-check.py --fix` rewrites titles and \
+             fixed pins; hand-written cells need a look):\n{}",
+            differ.len(),
+            differ.join("\n")
         );
     }
 

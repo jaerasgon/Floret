@@ -113,6 +113,15 @@ impl Welcome {
             );
         });
         ui.label(RichText::new("Make generative art by wiring nodes together.").color(FG_1));
+        ui.add_space(2.0);
+        ui.label(
+            RichText::new(
+                "Floret is in very early development. Expect rough edges and changes, \
+                 and tell me what you run into: your feedback shapes what comes next.",
+            )
+            .color(FG_2)
+            .small(),
+        );
         ui.add_space(14.0);
         let wide =
             |t: &str| egui::Button::new(RichText::new(t).size(14.0)).min_size(vec2(220.0, 30.0));

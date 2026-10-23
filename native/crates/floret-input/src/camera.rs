@@ -20,6 +20,9 @@ use std::time::{Duration, Instant};
 
 /// A session its node stopped polling shuts down.
 const IDLE: Duration = Duration::from_secs(2);
+/// How long a camera that has started may take to send its first picture
+/// before it counts as dead.
+const FIRST_PICTURE: Duration = Duration::from_secs(4);
 /// How often the device list may be re-queried.
 const RESCAN: Duration = Duration::from_secs(3);
 /// Frame formats `convert` understands.
@@ -149,10 +152,23 @@ struct DeviceList {
 fn scan() -> Vec<(String, CameraIndex)> {
     let infos = nokhwa::query(ApiBackend::Auto).unwrap_or_default();
     let names = crate::midi::unique_names(infos.iter().map(|i| i.human_name()));
-    names
+    let mut cams: Vec<_> = names
         .into_iter()
-        .zip(infos.iter().map(|i| i.index().clone()))
-        .collect()
+        .zip(infos.iter().map(|i| (i.index().clone(), i.description())))
+        .map(|(name, (index, description))| (name, index, built_in(description)))
+        .collect();
+    // The built-in camera first (so it is the default): with a display, a
+    // phone or a virtual camera connected, the first one listed may never
+    // send a picture. The sort is stable, so the rest keep their order.
+    cams.sort_by_key(|(_, _, built_in)| !built_in);
+    cams.into_iter().map(|(n, i, _)| (n, i)).collect()
+}
+
+/// Whether a camera's description names it a built-in one. On macOS it holds
+/// the AVFoundation device type (`…BuiltInWideAngleCamera`, or `…External`
+/// for displays, USB and phone cameras); other systems never say so.
+fn built_in(description: &str) -> bool {
+    description.contains("BuiltIn")
 }
 
 // ─── Capture sessions ────────────────────────────────────────────────────────
@@ -163,6 +179,21 @@ struct Latest {
     error: Option<String>,
     last_poll: Option<Instant>,
     done: bool,
+    /// The camera in use, once chosen.
+    camera: Option<String>,
+    /// When the camera started streaming; no picture yet means it may be dead.
+    streaming_since: Option<Instant>,
+}
+
+impl Latest {
+    /// A camera that started streaming but has sent nothing for too long.
+    fn stalled(&self) -> bool {
+        self.image.is_none()
+            && self.error.is_none()
+            && self
+                .streaming_since
+                .is_some_and(|t| t.elapsed() >= FIRST_PICTURE)
+    }
 }
 
 struct Shared {
@@ -191,6 +222,8 @@ impl Shared {
 struct Session {
     device: String,
     shared: Arc<Shared>,
+    /// Cameras that were tried and sent nothing (default camera only).
+    skipped: Vec<String>,
 }
 
 impl Drop for Session {
@@ -245,9 +278,35 @@ impl Cameras {
         if sessions.get(node).is_some_and(|s| s.device != req.device) {
             sessions.remove(node);
         }
+        let stalled = sessions
+            .get(node)
+            .and_then(|s| s.shared.lock().stalled().then(|| s.shared.clone()));
+        if let Some(shared) = stalled {
+            // Take the dead camera out, and with the default camera try the
+            // next one; a camera picked by name just gets a warning.
+            let name = shared.lock().camera.clone().unwrap_or_default();
+            let mut skipped = sessions
+                .remove(node)
+                .map(|s| s.skipped.clone())
+                .unwrap_or_default();
+            skipped.push(name.clone());
+            if req.device.is_empty() {
+                sessions.insert(node.to_owned(), self.spawn(req.device, req.mirror, skipped));
+            } else {
+                shared.fail(not_sending(&name));
+                sessions.insert(
+                    node.to_owned(),
+                    Session {
+                        device: req.device.to_owned(),
+                        shared,
+                        skipped,
+                    },
+                );
+            }
+        }
         let s = sessions
             .entry(node.to_owned())
-            .or_insert_with(|| self.spawn(req.device, req.mirror));
+            .or_insert_with(|| self.spawn(req.device, req.mirror, Vec::new()));
         s.shared.mirror.store(req.mirror, Ordering::Relaxed);
         let mut l = s.shared.lock();
         l.last_poll = Some(Instant::now());
@@ -263,7 +322,7 @@ impl Cameras {
         })
     }
 
-    fn spawn(&self, device: &str, mirror: bool) -> Session {
+    fn spawn(&self, device: &str, mirror: bool, skipped: Vec<String>) -> Session {
         let shared = Arc::new(Shared {
             latest: Mutex::new(Latest {
                 last_poll: Some(Instant::now()),
@@ -275,15 +334,17 @@ impl Cameras {
         let s = shared.clone();
         let dev = device.to_owned();
         let list = self.list.clone();
+        let skip = skipped.clone();
         let spawned = std::thread::Builder::new()
             .name("floret-camera".into())
-            .spawn(move || capture(&s, &dev, &list));
+            .spawn(move || capture(&s, &dev, &list, &skip));
         if let Err(e) = spawned {
             shared.fail(format!("couldn't start the camera: {e}"));
         }
         Session {
             device: device.to_owned(),
             shared,
+            skipped,
         }
     }
 }
@@ -379,7 +440,13 @@ fn open(index: &CameraIndex) -> Result<nokhwa::Camera, String> {
     Err(last.to_string())
 }
 
-fn capture(shared: &Shared, device: &str, list: &Mutex<DeviceList>) {
+fn not_sending(name: &str) -> String {
+    format!(
+        "Camera “{name}” isn't sending pictures. Pick another camera in the device menu, or check it isn't in use."
+    )
+}
+
+fn capture(shared: &Shared, device: &str, list: &Mutex<DeviceList>, skipped: &[String]) {
     if let Err(e) = permission() {
         return shared.fail(e);
     }
@@ -388,17 +455,19 @@ fn capture(shared: &Shared, device: &str, list: &Mutex<DeviceList>) {
         let mut l = list.lock().unwrap_or_else(|e| e.into_inner());
         (l.cameras, l.scanned) = (cams.clone(), Some(Instant::now()));
     }
-    let index = if device.is_empty() {
-        match cams.first() {
-            Some((_, i)) => i.clone(),
-            None => return shared.fail("No camera found.".into()),
+    let (name, index) = if device.is_empty() {
+        match cams.iter().find(|(n, _)| !skipped.contains(n)) {
+            Some((n, i)) => (n.clone(), i.clone()),
+            None if skipped.is_empty() => return shared.fail("No camera found.".into()),
+            None => return shared.fail(not_sending(&skipped.join("”, “"))),
         }
     } else {
         match cams.iter().find(|(n, _)| n == device) {
-            Some((_, i)) => i.clone(),
+            Some((n, i)) => (n.clone(), i.clone()),
             None => return shared.fail(format!("Camera “{device}” isn't connected.")),
         }
     };
+    shared.lock().camera = Some(name);
     let mut cam = match open(&index) {
         Ok(c) => c,
         Err(e) => return shared.fail(format!("Couldn't open the camera: {e}")),
@@ -406,6 +475,7 @@ fn capture(shared: &Shared, device: &str, list: &Mutex<DeviceList>) {
     if let Err(e) = cam.open_stream() {
         return shared.fail(format!("Couldn't start the camera: {e}"));
     }
+    shared.lock().streaming_since = Some(Instant::now());
     let mut failures = 0;
     while !shared.idle() {
         match cam.frame() {
@@ -461,6 +531,32 @@ mod tests {
         let px = nv12.pixel(1, 1);
         assert!(px[0] > 240 && px[1] < 10 && px[2] < 10, "{px:?}");
         assert!(convert(FrameFormat::YUYV, 4, 4, &[0; 8], false).is_err());
+    }
+
+    #[test]
+    fn built_in_cameras_are_told_from_the_rest() {
+        assert!(built_in(
+            "Apple Inc.: UniqueID - AVCaptureDeviceTypeBuiltInWideAngleCamera, Front f2.4"
+        ));
+        assert!(!built_in(
+            "Apple Inc.: Studio Display - AVCaptureDeviceTypeExternal, Unspecified f0"
+        ));
+        assert!(!built_in("USB Camera"));
+    }
+
+    #[test]
+    fn a_camera_with_no_picture_after_a_while_is_stalled() {
+        let mut l = Latest::default();
+        assert!(!l.stalled(), "not started yet");
+        l.streaming_since = Some(Instant::now());
+        assert!(!l.stalled(), "just started");
+        l.streaming_since = Instant::now().checked_sub(FIRST_PICTURE + Duration::from_secs(1));
+        assert!(l.stalled());
+        l.image = Some(Arc::new(Image::new(1, 1, vec![0, 0, 0, 255])));
+        assert!(!l.stalled(), "a picture arrived");
+        l.image = None;
+        l.error = Some("x".into());
+        assert!(!l.stalled(), "already failed");
     }
 
     #[test]

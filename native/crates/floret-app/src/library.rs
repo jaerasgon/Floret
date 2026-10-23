@@ -225,6 +225,9 @@ pub struct Library {
     /// Column view: the selected folder and library.
     folder: Option<String>,
     library: Option<LibRef>,
+    /// Set by the Collapse all / Expand all buttons; the folders follow it
+    /// on the next frame.
+    fold_all: Option<bool>,
     /// Sample thumbnails (rendered in the background, cached).
     thumbs: crate::thumbs::Thumbnails,
     /// Tiles view: the tile width ([`TILE_MIN`]..=[`TILE_MAX`]), kept in
@@ -252,6 +255,7 @@ impl Default for Library {
             status: None,
             folder: None,
             library: None,
+            fold_all: None,
         }
     }
 }
@@ -598,6 +602,22 @@ impl Library {
                 }
             });
         });
+        if self.mode != Mode::Column {
+            ui.horizontal(|ui| {
+                for (label, tip, open) in [
+                    ("Collapse all", "Close every folder", false),
+                    ("Expand all", "Open every folder", true),
+                ] {
+                    if ui
+                        .button(RichText::new(label).small())
+                        .on_hover_text(tip)
+                        .clicked()
+                    {
+                        self.fold_all = Some(open);
+                    }
+                }
+            });
+        }
         if self.mode == Mode::Grid {
             ui.horizontal(|ui| self.size_control(ui));
         }
@@ -644,6 +664,7 @@ impl Library {
                     }
                 }
             });
+        self.fold_all = None;
         // Cmd / Ctrl + scroll (or a pinch) over the tiles resizes them.
         if self.mode == Mode::Grid && ui.rect_contains_pointer(scrolled.inner_rect) {
             let zoom = ui.input(|i| i.zoom_delta());
@@ -698,6 +719,8 @@ impl Library {
             egui::collapsing_header::CollapsingState::load_with_default_open(ui.ctx(), id, true);
         if searching {
             state.set_open(true);
+        } else if let Some(open) = self.fold_all {
+            state.set_open(open);
         }
         let mut act = None;
         let header = state.show_header(ui, |ui| {
